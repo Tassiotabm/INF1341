@@ -23,7 +23,8 @@ public final class Connect {
 			con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881");
 			System.out.println("Connection Sucess.");
 		} catch(SQLException ex) {
-			System.err.println("SQLException: " + ex.getMessage());
+			System.out.println("Não consegui conectar com servidor, tentar na PUC!");
+			//System.err.println("SQLException: " + ex.getMessage());
 		}
 		try {
 			Generate_Statements(con);
@@ -35,6 +36,9 @@ public final class Connect {
 	private void Generate_Statements(Connection connection)throws SQLException{
 		  vetordeStatement.add(connection.prepareStatement("insert into MODALIDADE (ID_MODALIDADE,NOME,DISTANCIA,SEXO) values (?,?,?,?)"));	 		  
 		  vetordeStatement.add(connection.prepareStatement("insert into TORNEIO (ID_torneio,ID_modalidade,nome,dificuldade) values (?,?,?,?)"));	 		  
+		  vetordeStatement.add(connection.prepareStatement("insert into PARTICIPANTE values (?,?,?,?)"));	 		  
+		  vetordeStatement.add(connection.prepareStatement("select ID_torneio,nome from TORNEIO "));	 		  
+		  vetordeStatement.add(connection.prepareStatement("select from "));	 		  
 	}
 	public static Connection getCon() {
 		return con;
