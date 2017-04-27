@@ -28,25 +28,29 @@ public final class Janela extends JFrame implements ActionListener{
 	private static ImageIcon olympic = new ImageIcon(resizeImage("images/olympic.png"));
 	private static JButton sendModalidade = new JButton("Cadastrar Modalidade");
 	private static JButton sendTornament = new JButton("Cadastrar Torneio");
-	private static JButton sendPlayer1a = new JButton("Cadastrar Competidor");
+	private static JButton sendPlayer = new JButton("Cadastrar Competidor");
 	private static JButton sendPlayerTorneio = new JButton("Cadastrar sua Modalidade");
 	private static JButton sendQuery1 = new JButton("Send");
 	private static JButton sendQuery2 = new JButton("Send");
 	private static JButton sendQuery3 = new JButton("Send");
 	private static JButton endCadastro = new JButton("End Phase");
+	private static JButton sendPlayerModalidade = new JButton("Escolher Modalidade");
 	private static JComponent Principal;
 	private static JTabbedPane tabbedPane = new JTabbedPane();
 	private static Vector<JTextField> v1 = new TextFields(3).getVectorText();
 	private static Vector<JTextField> v2 = new TextFields(3).getVectorText();
 	private static Vector<JTextField> v3 = new TextFields(4).getVectorText();
 	private static Vector<JTextField> v4 = new TextFields(4).getVectorText();
+	private static Vector<JTextField> v5 = new TextFields(4).getVectorText();
 	private static JTextField Q1 = new JTextField();
 	private static JTextField Q2 = new JTextField();
 	private static JTextField Q3 = new JTextField();
+	private static String [] importantInfo = new String [3];
 	private static Query initQuery;
 	@SuppressWarnings("rawtypes")
-	private static JComboBox petList;
-	
+	private static JComboBox BoxModalidadeList;
+	@SuppressWarnings("rawtypes")
+	private static JComboBox BoxTornamentList;
 
 	public Janela(){
 		this.setIconImage(olympic.getImage());
@@ -56,18 +60,21 @@ public final class Janela extends JFrame implements ActionListener{
 		this.setLocationRelativeTo(null);
 		sendTornament.addActionListener(this);
 		sendModalidade.addActionListener(this);
-		sendPlayer1a.addActionListener(this);
+		sendPlayerModalidade.addActionListener(this);
+		sendPlayerTorneio.addActionListener(this);
+		sendPlayer.addActionListener(this);
 		sendQuery1.addActionListener(this);
 		sendQuery2.addActionListener(this);
 		sendQuery3.addActionListener(this);
-		sendPlayerTorneio.addActionListener(this);
+
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		createTabs();
 	}
 	private void createTabs(){
 		//Criar o organizador das tabls
 		//Vou receber o componente que contem o JPanel que
 		//sera incorporada no JTabbedPane
-		JComponent panel1 = makeTornamentPanel("Administração");
+		JComponent panel1 = makeAdministrationPanel("Administração");
 		//Adicionar o component criado acima no "gerenciador"
 		//de tabs.
 		tabbedPane.addTab("Administração", torch, panel1,
@@ -78,7 +85,7 @@ public final class Janela extends JFrame implements ActionListener{
 
 		//Criar Painel do Cadastro
 		//JComponent panel2 = makePlayerPanel("Cadastro");
-		Principal = makePlayerPanel("Cadastro");
+		Principal = makePlayerChoicePainel("Cadastro");
 		tabbedPane.addTab("Cadastro", torch, Principal,
 			                  "Se cadastre em um dos nossos Torneios!");
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
@@ -98,45 +105,18 @@ public final class Janela extends JFrame implements ActionListener{
 		//Adicionar no Frame o tab ontroler.
 		this.add(tabbedPane);
 	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected static JComponent makeModalidadePanel(String text){
-		
-        JPanel panel = new JPanel(false);
-       // initQuery = new Query();
-        // String [] torneiosStrings = initQuery.getTorneios();
-        String [] torneiosStrings = {"vaca","vadia"};
-    	petList = new JComboBox(torneiosStrings);
-
-    	panel.setLayout(new GridLayout(10,2));
-        panel.add(new JLabel("Escolha um dos torneios:"));
-        panel.add(petList);
-        panel.add(new JLabel());
-        panel.add(new JLabel("Nota Torneio"));
-        panel.add(v4.get(0));
-        panel.add(new JLabel());
-        panel.add(new JLabel("Naosei"));
-        panel.add(v4.get(1));
-        panel.add(sendPlayerTorneio);
-        //Create the combo box, select item at index 4.
-        //Indices start at 0, so 4 specifies the pig.
-        
-       // temp = petList;
-        return panel;
-	}
-
 	//Nesse metodo eu crio o JComponente que contem o
 	//Painel que aparece quando a aba é selecioada.
 	//É aqui que eu devo colocar outros componentes
 	//Como botão/textfield/forms.
-    protected static JComponent makeTornamentPanel(String text) {
+    protected static JComponent makeAdministrationPanel(String text) {
     	
         JPanel panel = new JPanel(false);
         endCadastro.setBackground(Color.red);
         JLabel filler = new JLabel(text);
         filler.setHorizontalAlignment(JLabel.CENTER);
         
-        panel.setLayout(new GridLayout(10,2));
+        panel.setLayout(new GridLayout(12,2));
         
         panel.add(new JLabel("Nome da Modalidade"));
         panel.add(v1.get(0));
@@ -145,6 +125,8 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(new JLabel("Sexo da Modalidade"));
         panel.add(v1.get(2));
         panel.add(sendModalidade);
+        panel.add(new JLabel());
+        panel.add(new JLabel());
         panel.add(new JLabel());
         panel.add(new JLabel("Nome do Torneio"));
         panel.add(v2.get(0));
@@ -161,6 +143,75 @@ public final class Janela extends JFrame implements ActionListener{
         
         return panel;
     }
+	 protected static JComponent makePlayerChoicePainel(String text){
+	        JPanel panel = new JPanel(false);        
+	        panel.setLayout(new GridLayout(10,2));
+	        panel.add(new JLabel("Nome do competidor"));
+	        panel.add(v3.get(0));
+	        panel.add(new JLabel("Data de Nascimento"));
+	        panel.add(v3.get(1));
+	        panel.add(new JLabel("Nacioalidade"));
+	        panel.add(v3.get(2));
+	        panel.add(new JLabel("CPF"));
+	        panel.add(v3.get(3));
+	        panel.add(new JLabel());
+	        panel.add(sendPlayer);
+	        panel.add(new JLabel());
+	        panel.add(new JLabel());
+	        panel.add(new JLabel());
+	        return panel;
+	    }
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected static JComponent makeModalidadeChoicePanel(String text){
+		
+        JPanel panel = new JPanel(false);
+        initQuery = new Query();
+        String [] modalidadesStrings = initQuery.getModalidades();
+        BoxModalidadeList = new JComboBox(modalidadesStrings);
+
+        
+    	panel.setLayout(new GridLayout(10,2));
+        panel.add(new JLabel("Escolha uma das modalidades:"));
+        panel.add(BoxModalidadeList);
+        panel.add(new JLabel());
+        panel.add(new JLabel("Sua marca nesta modalidade"));
+        panel.add(v4.get(0));
+        panel.add(new JLabel());
+        panel.add(new JLabel());
+        panel.add(new JLabel());
+        panel.add(new JLabel());
+        panel.add(sendPlayerModalidade);
+        //Create the combo box, select item at index 4.
+        //Indices start at 0, so 4 specifies the pig.
+        
+       // temp = petList;
+        return panel;
+	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected static JComponent makeTornamentChoicePanel(String text){
+		
+        JPanel panel = new JPanel(false);
+        initQuery = new Query();
+        String [] torneiosStrings = initQuery.getTorneios();
+        //String [] torneiosStrings = {"vaca","vadia"};
+        BoxTornamentList = new JComboBox(torneiosStrings);
+
+    	panel.setLayout(new GridLayout(10,2));
+        panel.add(new JLabel("Escolha um dos torneios:"));
+        panel.add(BoxTornamentList);
+        panel.add(new JLabel());
+        panel.add(new JLabel("Sua marca neste Torneio"));
+        panel.add(v5.get(0));
+        panel.add(new JLabel());
+        panel.add(new JLabel());
+        panel.add(sendPlayerTorneio);
+        panel.add(new JLabel());
+        panel.add(endCadastro);
+        //Create the combo box, select item at index 4.
+        //Indices start at 0, so 4 specifies the pig.
+        return panel;
+	}
     protected static JComponent makeTotemPanel(String text){
         JPanel panel = new JPanel(false);
         panel.setLayout(new GridLayout(10,2));
@@ -184,22 +235,7 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(sendQuery3);
         return panel;
     }
- protected static JComponent makePlayerPanel(String text){
-        JPanel panel = new JPanel(false);        
-        panel.setLayout(new GridLayout(10,2));
-        panel.add(new JLabel("Nome do competidor"));
-        panel.add(v3.get(0));
-        panel.add(new JLabel("Sua data de Nascimento"));
-        panel.add(v3.get(1));
-        panel.add(new JLabel("Nacioalidade"));
-        panel.add(v3.get(2));
-        panel.add(new JLabel());
-        panel.add(sendPlayer1a);
-        panel.add(new JLabel());
-        panel.add(new JLabel());
-        panel.add(new JLabel());
-        return panel;
-    }
+
     
  	protected static Image resizeImage(String s){
     	ImageIcon icontemp = new ImageIcon(s);
@@ -207,6 +243,7 @@ public final class Janela extends JFrame implements ActionListener{
 		Image newimg = temp.getScaledInstance(30,30,java.awt.Image.SCALE_SMOOTH);
 		return newimg;
     }
+ 	
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource() == sendModalidade){
 			initQuery = new Query(v1);
@@ -217,17 +254,39 @@ public final class Janela extends JFrame implements ActionListener{
 			initQuery = new Query(v2);
 			initQuery.sendTornament();
 		}
-		else if(e.getSource() == sendPlayer1a){
-			/*initQuery = new Query(v3);
-			initQuery.sendPlayer1();
-	        tabbedPane.setSelectedIndex(0);
-	        */
+		else if(e.getSource() == sendPlayer){
+			initQuery = new Query(v3);
+			initQuery.sendPlayer();
 			//tabbedPane.setComponentAt(1,makeModalidadePanel("playerTorneioDados"));
 			//Remover a Tab e adicionar a tab nova no lugar correto!
+			
+			importantInfo[0] = v3.get(3).getText(); 	//Guardar o CPF 
+	        tabbedPane.setSelectedIndex(0);
 			tabbedPane.remove(1);
-			tabbedPane.insertTab("Cadastro(1)",torch, makeModalidadePanel("playerTorneioDados"),
+			tabbedPane.insertTab("Cadastro(1)",torch, makeModalidadeChoicePanel("Segunda Tela"),
 					"Continue o cadastro", 1);
 			tabbedPane.setSelectedIndex(1);
+		}
+		else if(e.getSource() == sendPlayerModalidade){
+			initQuery = new Query(v3);
+			initQuery.sendChoiceModalidade();
+			importantInfo[1] = (String) BoxModalidadeList.getSelectedItem(); //Guardar Item Escolhido
+
+			tabbedPane.setSelectedIndex(0);
+			tabbedPane.remove(1);
+			tabbedPane.insertTab("Cadastro(2)",torch, makeTornamentChoicePanel("Terceira Tela"),
+					"Continue o cadastro", 1);
+			tabbedPane.setSelectedIndex(1);
+		}
+		else if(e.getSource() == sendPlayerTorneio){
+			//initQuery = new Query(v5);
+			//initQuery.sendChoiceTorneio();
+			importantInfo[2] = (String) BoxTornamentList.getSelectedItem();
+			//initQuery.sendInscription
+			System.out.println(BoxTornamentList.getSelectedItem());
+		}
+		else if(e.getSource() == endCadastro){
+			//Tirar o botao de cadastro e Chamar as procedures de rodar o torneio
 		}
 		else if(e.getSource() == sendQuery1){
 			initQuery = new Query(Q1);
@@ -241,12 +300,7 @@ public final class Janela extends JFrame implements ActionListener{
 			initQuery = new Query(Q3);
 			initQuery.sendQuery3();
 		}
-		else if(e.getSource() == endCadastro){
-			//Tirar o botao de cadastro e Chamar as procedures de rodar o torneio
-		}
-		else if(e.getSource() == sendPlayerTorneio){
-			System.out.println(petList.getSelectedItem());
-		}
+
 		else
 			System.exit(0);
 	}

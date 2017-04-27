@@ -1,9 +1,13 @@
 package connection;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import java.util.Vector;
 import javax.swing.JTextField;
 
@@ -29,9 +33,66 @@ public class Query {
 		}	
 		return true;
 	}
-	public String [] getTorneios(){
-		String ret [] = {"vaca","mula"};
+	
+	public static Date formataData(String data) throws Exception { 
+ 		if (data == null || data.equals(""))
+ 			return null;
+         java.sql.Date date = null;
+         try {
+             DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+             date = new java.sql.Date( ((java.util.Date)formatter.parse(data)).getTime() );
+         } catch (ParseException e) {            
+             throw e;
+         }
+         return date;
+ 	}
+	public String [] getModalidades(){
+		String ret [] = new String[10];
+		ResultSet rs = null;
+		int i = 0;
 		
+		PreparedStatement statement = con.getVetordeStatement().get(4);
+		try {
+			statement.setQueryTimeout(30);
+			rs = statement.executeQuery();
+	 	      while(rs.next())
+	 	      {
+	 	    	ret [i] = rs.getString("NOME");
+	 	    	//System.out.println(rs.getInt("ID_MODALIDADE"));
+	 	        //System.out.print(" "+rs.getString("NOME"));
+	 	        i++;
+	 	      }
+			System.out.println("Query feito com sucesso.");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Erro na conexao da query do qpox.");
+		}		
+		return ret;
+	}
+	public String [] getTorneios(){
+
+		String ret [] = new String[10];
+		ResultSet rs = null;
+		int i = 0;
+		
+		PreparedStatement statement = con.getVetordeStatement().get(3);
+		try {
+			statement.setQueryTimeout(30);
+			rs = statement.executeQuery();
+	 	      while(rs.next())
+	 	      {
+	 	    	ret [i] = rs.getString("NOME");
+	 	    	System.out.println(rs.getInt("ID_TORNEIO"));
+	 	        System.out.print(" "+rs.getString("NOME"));
+	 	        i++;
+	 	      }
+			System.out.println("Query feito com sucesso.");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Erro na conexao da query do qpox.");
+		}		
 		return ret;
 	}
 	
@@ -72,39 +133,33 @@ public class Query {
 				System.out.println("Erro na criação do Torneio.");
 			}
 	}
-	public void sendPlayer1(){
-		//insert into PARTICIPANTE values (?,?,?,?)
-		System.out.println("entra");
-		PreparedStatement statement = con.getVetordeStatement().get(3);
-		
-		PreparedStatement statement_iscrito = con.getVetordeStatement().get(4); //Conection 4
-		//Terceiro campo é um textfield com as provas!
-		List<String> queryList = Arrays.asList(v1.get(3).getText().split(","));
-		
+	public void sendPlayer(){
+		Date dt = null;
+		PreparedStatement statement = con.getVetordeStatement().get(2);
 		try {
-			statement.setInt(1,0); //Como estamos chamando o valro nao importa
-			statement.setString(1,v1.get(0).getText()); //A Geração do TorneioID é feito por Trigger
-			statement.setString(2,v1.get(1).getText());
-			statement.setString(3,v1.get(2).getText()); //FUCKING DATA
+			dt = formataData(v1.get(1).getText());
+		} catch (Exception e) {
+			System.out.println("Erro na geração de Data");
+		}
+		System.out.println("Valor dentro da JTEXT"+v1.get(3).getText());
+		//int temp = Integer.parseInt(v1.get(3).getText());
+		double temp1 = Double.valueOf(v1.get(3).getText());
+		try {
+			statement.setDouble(1, temp1); 	// CPF
+			statement.setString(2,v1.get(0).getText());				   	// NOME
+			statement.setString(3,v1.get(2).getText());				   	// NACIONALIDADE
+			statement.setDate(4,dt); 									//DATA
+			statement.setQueryTimeout(10);
+			System.out.println("ok");
 			statement.executeUpdate();
 			System.out.println("Query feito com sucesso.");
 		} catch (SQLException e) {
+			e.printStackTrace();
 			System.out.println("Erro na inscricao do participante na tabela PARTICIPANTE");
 		} //Como estamos chamando o valro nao importa
+	}
+	public void sendChoiceModalidade(){
 		
-		try {
-			for( String s : queryList){
-				statement_iscrito.setString(1,s);
-				statement_iscrito.setQueryTimeout(30);
-				statement_iscrito.executeUpdate();
-				System.out.println("Query feito com sucesso.");
-				System.out.println(s);
-			}
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
-			System.out.println("Erro na criação do Competidor na tabela INCRITO.");
-		}
 	}
 	public void sendQuery1(){
 		if(checkQuery() == false)

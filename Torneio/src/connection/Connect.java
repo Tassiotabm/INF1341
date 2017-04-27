@@ -30,15 +30,15 @@ public final class Connect {
 			Generate_Statements(con);
 		} catch (SQLException e) {
 			System.out.println("Erro na criação dos Statements.");
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	private void Generate_Statements(Connection connection)throws SQLException{
 		  vetordeStatement.add(connection.prepareStatement("insert into MODALIDADE (ID_MODALIDADE,NOME,DISTANCIA,SEXO) values (?,?,?,?)"));	 		  
 		  vetordeStatement.add(connection.prepareStatement("insert into TORNEIO (ID_torneio,ID_modalidade,nome,dificuldade) values (?,?,?,?)"));	 		  
 		  vetordeStatement.add(connection.prepareStatement("insert into PARTICIPANTE values (?,?,?,?)"));	 		  
-		  vetordeStatement.add(connection.prepareStatement("select ID_torneio,nome from TORNEIO "));	 		  
-		  vetordeStatement.add(connection.prepareStatement("select from "));	 		  
+		  vetordeStatement.add(connection.prepareStatement("select ID_TORNEIO,NOME from TORNEIO"));	 		  
+		  vetordeStatement.add(connection.prepareStatement("select ID_MODALIDADE,NOME from MODALIDADE"));	 		  
 	}
 	public static Connection getCon() {
 		return con;
