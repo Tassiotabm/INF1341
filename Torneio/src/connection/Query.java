@@ -46,8 +46,8 @@ public class Query {
          }
          return date;
  	}
-	public String [] getModalidades(){
-		String ret [] = new String[10];
+	public String [][] getModalidades(){
+		String ret [][] = new String[20][20];
 		ResultSet rs = null;
 		int i = 0;
 		
@@ -57,9 +57,8 @@ public class Query {
 			rs = statement.executeQuery();
 	 	      while(rs.next())
 	 	      {
-	 	    	ret [i] = rs.getString("NOME");
-	 	    	//System.out.println(rs.getInt("ID_MODALIDADE"));
-	 	        //System.out.print(" "+rs.getString("NOME"));
+	 	    	ret [0][i] = rs.getString("ID_MODALIDADE");
+	 	    	ret [1][i] = rs.getString("NOME");
 	 	        i++;
 	 	      }
 			System.out.println("Query feito com sucesso.");
@@ -70,23 +69,28 @@ public class Query {
 		}		
 		return ret;
 	}
-	public String [] getTorneios(){
+	public String [][] getTorneios(String id_modalidade){
 
-		String ret [] = new String[10];
+		String ret [][] = new String[10][10];
 		ResultSet rs = null;
 		int i = 0;
+		System.out.println(id_modalidade);
+		double id_mod = Double.valueOf(id_modalidade);
 		
 		PreparedStatement statement = con.getVetordeStatement().get(3);
 		try {
 			statement.setQueryTimeout(30);
+			statement.setDouble(1,id_mod);
 			rs = statement.executeQuery();
 	 	      while(rs.next())
 	 	      {
-	 	    	ret [i] = rs.getString("NOME");
-	 	    	System.out.println(rs.getInt("ID_TORNEIO"));
-	 	        System.out.print(" "+rs.getString("NOME"));
+	 	    	ret [0][i] = rs.getString("NOME");
+	 	    	ret [1][i] = rs.getString("ID_TORNEIO");
+	 	    	ret [2][i] = rs.getString("DIFICULDADE");
+	 	    	System.out.println(ret [0][i] + " " + ret [1][i] + " "+ ret [2][i]);
 	 	        i++;
 	 	      }
+	 	      
 			System.out.println("Query feito com sucesso.");
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -114,14 +118,15 @@ public class Query {
 			System.out.println("Erro na criação da Modalidade.");
 		}
 	}
-	public void sendTornament(){
+	public void sendTornament(String modalidade_id){
 		if(checkQuery() == false)
 			return;
 		//Agora vamos mandar um query pro servidor
+		Double numberModaliade_id = Double.valueOf(modalidade_id);
 		PreparedStatement statement = con.getVetordeStatement().get(1);
 			try {
 				statement.setInt(1,0); //A Geração do TorneioID é feito por Trigger!
-				statement.setInt(2,Integer.parseInt(v1.get(2).getText()));
+				statement.setDouble(2,numberModaliade_id);
 				statement.setString(3,v1.get(0).getText());
 				statement.setInt(4,Integer.parseInt(v1.get(1).getText()));
 				statement.setQueryTimeout(30);
@@ -158,14 +163,11 @@ public class Query {
 			System.out.println("Erro na inscricao do participante na tabela PARTICIPANTE");
 		} //Como estamos chamando o valro nao importa
 	}
-	public void sendChoiceModalidade(){
-		
-	}
 	public void sendQuery1(){
 		if(checkQuery() == false)
 			return;
 		//Agora vamos mandar um query pro servidor
-		PreparedStatement statement = con.getVetordeStatement().get(3);
+		PreparedStatement statement = con.getVetordeStatement().get(0);
 			try {
 				statement.setString(1,v1.get(0).getText()); //A Geração do TorneioID é feito por Trigger!
 				statement.setQueryTimeout(30);
