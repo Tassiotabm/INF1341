@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,11 +17,12 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import connection.Query;
-
+import regras.Inscricao;
 
 public final class Janela extends JFrame implements ActionListener{
 
@@ -30,7 +32,7 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JButton sendModalidade = new JButton("Cadastrar Modalidade");
 	private static JButton sendTornament = new JButton("Cadastrar Torneio");
 	private static JButton sendPlayer = new JButton("Cadastrar Competidor");
-	private static JButton sendPlayerTorneio = new JButton("Inserir Torneio");
+	private static JButton getPlayerTorneio = new JButton("Cadastrar Torneio Desejado");
 	private static JButton sendQuery1 = new JButton("Send");
 	private static JButton sendQuery2 = new JButton("Send");
 	private static JButton sendQuery3 = new JButton("Send");
@@ -40,22 +42,29 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JButton sendPlayerModalidade = new JButton("Escolher Modalidade");
 	private static JComponent Principal;
 	private static JTabbedPane tabbedPane = new JTabbedPane();
-	private static Vector<JTextField> v1 = new TextFields(3).getVectorText();
+	private static JTabbedPane subPane = new JTabbedPane();
+	private static Vector<JTextField> v1 = new TextFields(2).getVectorText();
 	private static Vector<JTextField> v2 = new TextFields(2).getVectorText();
 	private static Vector<JTextField> v3 = new TextFields(4).getVectorText();
-	private static Vector<JTextField> v5 = new TextFields(4).getVectorText();
+	private static Vector<JTextField> v5 = new TextFields(1).getVectorText();
 	private static JTextField Q1 = new JTextField();
 	private static JTextField Q2 = new JTextField();
 	private static JTextField Q3 = new JTextField();
 	private static String [] importantInfo = new String [3];
 	private static String [][] importantInfoTorneio;
+	private static String tempNomeModalidade = null;
+	private static int tempDificuldadeModalidade;
 	private static Query initQuery;
+	private static Inscricao newPlayer = new Inscricao();
 	@SuppressWarnings("rawtypes")
 	private static JComboBox BoxModalidadeList;
 	@SuppressWarnings("rawtypes")
 	private static JComboBox BoxTornamentList;
 	@SuppressWarnings("rawtypes")
 	private static JComboBox BoxModalidadeAdmnistrantionList;
+    private static JRadioButton Feminino;
+    private static JRadioButton Masculino;
+    private static ButtonGroup modalidadeButtonGroup;
 
 	public Janela(){
         initQuery = new Query();
@@ -67,11 +76,12 @@ public final class Janela extends JFrame implements ActionListener{
 		sendTornament.addActionListener(this);
 		sendModalidade.addActionListener(this);
 		sendPlayerModalidade.addActionListener(this);
-		sendPlayerTorneio.addActionListener(this);
+		getPlayerTorneio.addActionListener(this);
 		sendPlayer.addActionListener(this);
 		sendQuery1.addActionListener(this);
 		sendQuery2.addActionListener(this);
 		sendQuery3.addActionListener(this);
+		endCadastro.addActionListener(this);
 		returnModalidade.addActionListener(this);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		createTabs();
@@ -80,11 +90,14 @@ public final class Janela extends JFrame implements ActionListener{
 		//Criar o organizador das tabls
 		//Vou receber o componente que contem o JPanel que
 		//sera incorporada no JTabbedPane
-		JComponent panel1 = makeAdministrationPanel("Administração");
+		JComponent panel1 = makeAdministrationPanel("Toreios e Modalidades");
 		//Adicionar o component criado acima no "gerenciador"
 		//de tabs.
-		tabbedPane.addTab("Administração", torch, panel1,
+		JComponent panel2 = makeSeriesPanel("Series");
+		subPane.addTab("Administração", torch, panel1,
 		                  "Apenas para o staff!");
+		subPane.addTab("Notas das Series",torch,panel2,"Apenas para staff");
+		tabbedPane.addTab("Administração",torch,subPane,"Apenas para staff");
 		//Um metodo para permitir o andar entre as tabs com
 		//as arrows do teclado.
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
@@ -115,25 +128,49 @@ public final class Janela extends JFrame implements ActionListener{
 	//Painel que aparece quando a aba é selecioada.
 	//É aqui que eu devo colocar outros componentes
 	//Como botão/textfield/forms.
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected static JComponent makeSeriesPanel(String text){
+        JPanel panel = new JPanel(false);        
+        panel.setLayout(new GridLayout(6,2));
+        panel.add(new JButton("Teste0"));
+        panel.add(new JButton("Teste1"));
+        panel.add(new JButton("Teste2"));
+        panel.add(new JButton("Teste3"));
+        panel.add(new JButton("Teste4"));
+        panel.add(new JLabel("Teste5"));
+        panel.add(new JButton("Teste1"));
+        panel.add(new JButton("Teste2"));
+        panel.add(new JLabel("Teste3"));
+        panel.add(new JButton("Teste4"));
+
+        return panel;    	
+    }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected static JComponent makeAdministrationPanel(String text) {
     	
         JPanel panel = new JPanel(false);
-        endCadastro.setBackground(Color.red);
+        Feminino = new JRadioButton("Feminino");
+        Masculino = new JRadioButton("Masculino");
+        modalidadeButtonGroup = new ButtonGroup();
+        modalidadeButtonGroup.add(Feminino);
+        modalidadeButtonGroup.add(Masculino);
+
         JLabel filler = new JLabel(text);
         filler.setHorizontalAlignment(JLabel.CENTER);
         
         String [][] modalidadesStrings = initQuery.getModalidades();
         BoxModalidadeAdmnistrantionList = new JComboBox(modalidadesStrings[1]);
         
-        panel.setLayout(new GridLayout(12,2));
+        panel.setLayout(new GridLayout(9,2));
         
         panel.add(new JLabel("Nome da Modalidade"));
         panel.add(v1.get(0));
         panel.add(new JLabel("Distância da Modalidade"));
         panel.add(v1.get(1));
-        panel.add(new JLabel("Sexo da Modalidade"));
-        panel.add(v1.get(2));
+        
+        /**************/
+        panel.add(Masculino);
+        panel.add(Feminino);
+        /*************/
         panel.add(sendModalidade);
         panel.add(new JLabel());
         panel.add(new JLabel("Nome do Torneio"));
@@ -145,11 +182,7 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(sendTornament);
         endEpocaParaCadastro.setBackground(Color.RED);
         panel.add(endEpocaParaCadastro);
-        panel.add(new JLabel());
-        panel.add(new JLabel());
-        panel.add(new JLabel());
 
-        
         return panel;
     }
 	 protected static JComponent makePlayerChoicePainel(String text){
@@ -176,11 +209,8 @@ public final class Janela extends JFrame implements ActionListener{
 		
         JPanel panel = new JPanel(false);
         initQuery = new Query();
-        
         String [][] modalidadesStrings = initQuery.getModalidades();
-        BoxModalidadeList = new JComboBox(modalidadesStrings[1]);
-
-        
+        BoxModalidadeList = new JComboBox(modalidadesStrings[1]);        
     	panel.setLayout(new GridLayout(10,2));
         panel.add(new JLabel("Escolha uma das modalidades:"));
         panel.add(BoxModalidadeList);
@@ -190,10 +220,7 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(new JLabel());
         panel.add(new JLabel());
         panel.add(sendPlayerModalidade);
-        //Create the combo box, select item at index 4.
-        //Indices start at 0, so 4 specifies the pig.
-        
-       // temp = petList;
+
         return panel;
 	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -211,9 +238,13 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(new JLabel("Sua marca neste Torneio"));
         panel.add(v5.get(0));
         panel.add(new JLabel());
+        panel.add(getPlayerTorneio);
+        panel.add(new JLabel());
+        panel.add(new JLabel());
+        panel.add(new JLabel());
         panel.add(returnModalidade);
         panel.add(new JLabel());
-        panel.add(sendPlayerTorneio);
+        panel.add(new JLabel());
         panel.add(new JLabel());
         panel.add(endCadastro);
         //Create the combo box, select item at index 4.
@@ -256,57 +287,57 @@ public final class Janela extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource() == sendModalidade){
 			initQuery = new Query(v1);
-			initQuery.sendModalidade();
+			if(Feminino.isSelected())
+				initQuery.sendModalidade(Feminino.getText());
+			else if(Masculino.isSelected())
+				initQuery.sendModalidade(Masculino.getText());			
+
 	        String [][] modalidadesStrings = initQuery.getModalidades();
 	        BoxModalidadeAdmnistrantionList.removeAll();
-	        //BoxModalidadeAdmnistrantionList = new JComboBox(modalidadesStrings[1]);
 	        DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
 	        BoxModalidadeAdmnistrantionList.setModel( model );
-
+	        
 		}
-		else if(e.getSource() == sendTornament){
-			//Capturar as variaveis dos TextFields
-			
+		else if(e.getSource() == sendTornament){ //Cadastrar o torneio no banco
 			String tornamentModalidade = (String) BoxModalidadeAdmnistrantionList.getSelectedItem(); 
-			
 			String [][] modalidadesStrings = initQuery.getModalidades();
-			
 			for(int i=0; i<modalidadesStrings.length; i++){
 				if(modalidadesStrings[1][i].equals(tornamentModalidade)){
 					tornamentModalidade = modalidadesStrings[0][i];
+					tempDificuldadeModalidade = Integer.parseInt(modalidadesStrings[0][i]);
 					break;
 				}
 			}
-			
 			initQuery = new Query(v2);
 			initQuery.sendTornament(tornamentModalidade);
 		}
-		else if(e.getSource() == sendPlayer){
+		else if(e.getSource() == sendPlayer){	//Cadastrar o Participante no banco
 			initQuery = new Query(v3);
 			initQuery.sendPlayer();
-			//tabbedPane.setComponentAt(1,makeModalidadePanel("playerTorneioDados"));
-			//Remover a Tab e adicionar a tab nova no lugar correto!
-			
-			importantInfo[0] = v3.get(3).getText(); 	//Guardar o CPF 
+			importantInfo[0] = v3.get(3).getText(); 	 
+			newPlayer.setPlayerID(v3.get(3).getText());	//Guardar CPF
 	        tabbedPane.setSelectedIndex(0);
 			tabbedPane.remove(1);
 			tabbedPane.insertTab("Modalidades",torch, makeModalidadeChoicePanel("Segunda Tela"),
 					"Continue o cadastro", 1);
 			tabbedPane.setSelectedIndex(1);
 		}
-		else if(e.getSource() == sendPlayerModalidade){
+		else if(e.getSource() == sendPlayerModalidade){ //Coletar a modalidade escolhida
 			initQuery = new Query(v3);
 			importantInfo[1] = (String) BoxModalidadeList.getSelectedItem(); 
-			
+			String temp;
+			tempNomeModalidade = importantInfo[1];
 			String [][] modalidadesStrings = initQuery.getModalidades();
-			
-			for(int i=0; i<modalidadesStrings.length; i++){
+			for(int i=0; i<modalidadesStrings.length; i++){ //Achar na matriz o nome associado a chave primaria
 				if(modalidadesStrings[1][i].equals(importantInfo[1])){
+					temp = importantInfo[1];
 					importantInfo[1] = modalidadesStrings[0][i];
+					//Adicionar no Torneio
+					//Modalidade x = new Modal
+					newPlayer.inserirModalidade(Double.valueOf(modalidadesStrings[0][i]), temp);
 					break;
 				}
 			}
-			
 			
 			tabbedPane.setSelectedIndex(0);
 			tabbedPane.remove(1);
@@ -314,23 +345,35 @@ public final class Janela extends JFrame implements ActionListener{
 					"Continue o cadastro", 1);
 			tabbedPane.setSelectedIndex(1);
 		}
-		else if(e.getSource() == returnModalidade){
+		else if(e.getSource() == returnModalidade){	//Retornar para a aba modalidade
 			tabbedPane.setSelectedIndex(0);
 			tabbedPane.remove(1);
 			tabbedPane.insertTab("Modalidades",torch, makeModalidadeChoicePanel("Segunda Tela"),
 					"Continue o cadastro", 1);
 			tabbedPane.setSelectedIndex(1);
 		}
-		else if(e.getSource() == sendPlayerTorneio){
-			//initQuery.sendChoiceTorneio();
-			importantInfo[2] = (String) BoxTornamentList.getSelectedItem();
-			Double nota = Double.valueOf(v5.get(0).getText()); //Pegar a marca
-			importantInfoTorneio
+		else if(e.getSource() == getPlayerTorneio){
+			int nota;
+			importantInfo[2] = (String) BoxTornamentList.getSelectedItem(); //Pegar o torneio escolhido
+			if(v5.get(0).getText().equals("")){
+				nota = 0;
+				v5.get(0).setText("Você colocou zero");
+			}
+			else
+				nota = Integer.parseInt(v5.get(0).getText()); //Pegar a marca
+			newPlayer.inserirTorneio(tempNomeModalidade,Double.valueOf(importantInfo[1]), importantInfo[2], tempDificuldadeModalidade,nota);
+			//importantInfoTorneio
+			newPlayer.test();
 			//initQuery.sendInscription
-			System.out.println(BoxTornamentList.getSelectedItem());
 		}
 		else if(e.getSource() == endCadastro){
-			//Tirar o botao de cadastro e Chamar as procedures de rodar o torneio
+			newPlayer.makeTupla();
+			initQuery = new Query();
+			newPlayer.test();
+			initQuery.sendInscrito(Double.valueOf(newPlayer.getPlayerID()),
+					newPlayer.getListadeModalidade().get(0).getModalidadeID(),
+					newPlayer.getListadeModalidade().get(0).getListaTorneio().get(0).getTorneioID(),
+					newPlayer.getListadeModalidade().get(0).getListaTorneio().get(0).getMarca());
 		}
 		else if(e.getSource() == sendQuery1){
 			initQuery = new Query(Q1);
@@ -344,7 +387,6 @@ public final class Janela extends JFrame implements ActionListener{
 			initQuery = new Query(Q3);
 			initQuery.sendQuery3();
 		}
-
 		else
 			System.exit(0);
 	}

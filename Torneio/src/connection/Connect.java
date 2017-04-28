@@ -38,7 +38,8 @@ public final class Connect {
 		  vetordeStatement.add(connection.prepareStatement("insert into TORNEIO (ID_torneio,ID_modalidade,nome,dificuldade) values (?,?,?,?)"));	 		  
 		  vetordeStatement.add(connection.prepareStatement("insert into PARTICIPANTE values (?,?,?,?)"));	 		  
 		  vetordeStatement.add(connection.prepareStatement("select NOME,ID_TORNEIO,DIFICULDADE from TORNEIO WHERE ID_MODALIDADE = ?"));	 		  
-		  vetordeStatement.add(connection.prepareStatement("select NOME,ID_MODALIDADE from MODALIDADE"));	 		  
+		  vetordeStatement.add(connection.prepareStatement("select NOME,ID_MODALIDADE from MODALIDADE"));
+		  vetordeStatement.add(connection.prepareStatement("insert into INSCRITO values(?,?,?,?)"));
 	}
 	public static Connection getCon() {
 		return con;

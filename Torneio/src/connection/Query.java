@@ -47,7 +47,7 @@ public class Query {
          return date;
  	}
 	public String [][] getModalidades(){
-		String ret [][] = new String[20][20];
+		String ret [][] = new String[30][30];
 		ResultSet rs = null;
 		int i = 0;
 		
@@ -61,7 +61,7 @@ public class Query {
 	 	    	ret [1][i] = rs.getString("NOME");
 	 	        i++;
 	 	      }
-			System.out.println("Query feito com sucesso.");
+				System.out.println("comboBOX da Modalidade feita com sucesso.");
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -91,7 +91,7 @@ public class Query {
 	 	        i++;
 	 	      }
 	 	      
-			System.out.println("Query feito com sucesso.");
+			System.out.println("comboBOX do Torneio feito com sucesso.");
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -100,7 +100,7 @@ public class Query {
 		return ret;
 	}
 	
-	public void sendModalidade(){
+	public void sendModalidade(String genero){
 		if(checkQuery() == false)
 			return;
 		PreparedStatement statement = con.getVetordeStatement().get(0);
@@ -108,10 +108,10 @@ public class Query {
 			statement.setInt(1,0);	//A Geração do IDincrementado é feito por Trigger!
 			statement.setString(2,v1.get(0).getText());
 			statement.setInt(3,Integer.parseInt(v1.get(1).getText()));
-			statement.setString(4,v1.get(2).getText());
+			statement.setString(4,genero);
 			statement.setQueryTimeout(30);
 			statement.executeUpdate();
-			System.out.println("Insert feito com sucesso.");
+			System.out.println("Insert da Modalidade feito com sucesso.");
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			//e1.printStackTrace();
@@ -131,7 +131,7 @@ public class Query {
 				statement.setInt(4,Integer.parseInt(v1.get(1).getText()));
 				statement.setQueryTimeout(30);
 				statement.executeUpdate();
-				System.out.println("Insert feito com sucesso.");
+				System.out.println("Insert do torneio feito com sucesso.");
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				//e1.printStackTrace();
@@ -146,8 +146,6 @@ public class Query {
 		} catch (Exception e) {
 			System.out.println("Erro na geração de Data");
 		}
-		System.out.println("Valor dentro da JTEXT"+v1.get(3).getText());
-		//int temp = Integer.parseInt(v1.get(3).getText());
 		double temp1 = Double.valueOf(v1.get(3).getText());
 		try {
 			statement.setDouble(1, temp1); 	// CPF
@@ -155,13 +153,29 @@ public class Query {
 			statement.setString(3,v1.get(2).getText());				   	// NACIONALIDADE
 			statement.setDate(4,dt); 									//DATA
 			statement.setQueryTimeout(10);
-			System.out.println("ok");
 			statement.executeUpdate();
-			System.out.println("Query feito com sucesso.");
+			System.out.println("Insert do player com sucesso.");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Erro na inscricao do participante na tabela PARTICIPANTE");
 		} //Como estamos chamando o valro nao importa
+	}
+	public void sendInscrito(Double participanteID,Double modalidadeID,Double torneioID,int marca){
+		//Agora vamos mandar um query pro servidor
+		PreparedStatement statement = con.getVetordeStatement().get(5);
+			try {
+				statement.setDouble(1,participanteID); 	//Participante ID
+				statement.setDouble(2,modalidadeID); 	//Modalidade ID
+				statement.setDouble(3,torneioID); 	//Torneio ID
+				statement.setInt(4,marca);		//Marca
+				statement.setQueryTimeout(30);
+				statement.executeUpdate();
+				System.out.println("Insert de inscrito feito com sucesso.");
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				//e1.printStackTrace();
+				System.out.println("Erro na criação do Torneio.");
+			}
 	}
 	public void sendQuery1(){
 		if(checkQuery() == false)
@@ -172,7 +186,7 @@ public class Query {
 				statement.setString(1,v1.get(0).getText()); //A Geração do TorneioID é feito por Trigger!
 				statement.setQueryTimeout(30);
 				statement.executeUpdate();
-				System.out.println("Query feito com sucesso.");
+				System.out.println("Query(1) feito com sucesso.");
 			} catch (SQLException e1) {
 				System.out.println("Erro ao enviar o Query1.");
 			}
@@ -186,7 +200,7 @@ public class Query {
 				statement.setString(1,v1.get(0).getText()); //A Geração do TorneioID é feito por Trigger!
 				statement.setQueryTimeout(30);
 				statement.executeUpdate();
-				System.out.println("Query feito com sucesso.");
+				System.out.println("Query(2) feito com sucesso.");
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				//e1.printStackTrace();
@@ -202,7 +216,7 @@ public class Query {
 				statement.setString(1,v1.get(0).getText()); //A Geração do TorneioID é feito por Trigger!
 				statement.setQueryTimeout(30);
 				statement.executeUpdate();
-				System.out.println("Query feito com sucesso.");
+				System.out.println("Query(3) feito com sucesso.");
 			} catch (SQLException e1) {
 				System.out.println("Erro ao enviar o Query3.");
 			}
