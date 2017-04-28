@@ -71,7 +71,7 @@ public class Query {
 	}
 	public String [][] getTorneios(String id_modalidade){
 
-		String ret [][] = new String[10][10];
+		String ret [][] = new String[30][30];
 		ResultSet rs = null;
 		int i = 0;
 		System.out.println(id_modalidade);
@@ -162,6 +162,12 @@ public class Query {
 	}
 	public void sendInscrito(Double participanteID,Double modalidadeID,Double torneioID,int marca){
 		//Agora vamos mandar um query pro servidor
+		System.out.println("=====================================");
+		System.out.println("id do participante:"+participanteID+
+				" id da modalidade:"+modalidadeID+
+				" id do torneio:"+torneioID+
+				" marca"+marca);
+		System.out.println("=====================================");
 		PreparedStatement statement = con.getVetordeStatement().get(5);
 			try {
 				statement.setDouble(1,participanteID); 	//Participante ID
@@ -173,8 +179,8 @@ public class Query {
 				System.out.println("Insert de inscrito feito com sucesso.");
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
-				//e1.printStackTrace();
-				System.out.println("Erro na criação do Torneio.");
+				e1.printStackTrace();
+				System.out.println("Erro na criação do Inscrito.");
 			}
 	}
 	public void sendQuery1(){

@@ -53,9 +53,8 @@ public final class Janela extends JFrame implements ActionListener{
 	private static String [] importantInfo = new String [3];
 	private static String [][] importantInfoTorneio;
 	private static String tempNomeModalidade = null;
-	private static int tempDificuldadeModalidade;
 	private static Query initQuery;
-	private static Inscricao newPlayer = new Inscricao();
+	private static Inscricao newPlayer;
 	@SuppressWarnings("rawtypes")
 	private static JComboBox BoxModalidadeList;
 	@SuppressWarnings("rawtypes")
@@ -83,6 +82,7 @@ public final class Janela extends JFrame implements ActionListener{
 		sendQuery3.addActionListener(this);
 		endCadastro.addActionListener(this);
 		returnModalidade.addActionListener(this);
+		endEpocaParaCadastro.addActionListener(this);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		createTabs();
 	}
@@ -94,7 +94,7 @@ public final class Janela extends JFrame implements ActionListener{
 		//Adicionar o component criado acima no "gerenciador"
 		//de tabs.
 		JComponent panel2 = makeSeriesPanel("Series");
-		subPane.addTab("Administração", torch, panel1,
+		subPane.addTab("Modalidades e Torneios", torch, panel1,
 		                  "Apenas para o staff!");
 		subPane.addTab("Notas das Series",torch,panel2,"Apenas para staff");
 		tabbedPane.addTab("Administração",torch,subPane,"Apenas para staff");
@@ -186,8 +186,14 @@ public final class Janela extends JFrame implements ActionListener{
         return panel;
     }
 	 protected static JComponent makePlayerChoicePainel(String text){
-	        JPanel panel = new JPanel(false);        
+	        newPlayer = new Inscricao();
+		 	JPanel panel = new JPanel(false);        
 	        panel.setLayout(new GridLayout(10,2));
+	        v3.get(0).setText("");
+	        v3.get(1).setText("");
+	        v3.get(2).setText("");
+	        v3.get(3).setText("");
+
 	        panel.add(new JLabel("Nome do competidor"));
 	        panel.add(v3.get(0));
 	        panel.add(new JLabel("Data de Nascimento"));
@@ -304,7 +310,6 @@ public final class Janela extends JFrame implements ActionListener{
 			for(int i=0; i<modalidadesStrings.length; i++){
 				if(modalidadesStrings[1][i].equals(tornamentModalidade)){
 					tornamentModalidade = modalidadesStrings[0][i];
-					tempDificuldadeModalidade = Integer.parseInt(modalidadesStrings[0][i]);
 					break;
 				}
 			}
@@ -353,27 +358,49 @@ public final class Janela extends JFrame implements ActionListener{
 			tabbedPane.setSelectedIndex(1);
 		}
 		else if(e.getSource() == getPlayerTorneio){
+			
 			int nota;
 			importantInfo[2] = (String) BoxTornamentList.getSelectedItem(); //Pegar o torneio escolhido
-			if(v5.get(0).getText().equals("")){
+			if(v5.get(0).getText().equals("")){ //Marca
 				nota = 0;
 				v5.get(0).setText("Você colocou zero");
 			}
 			else
 				nota = Integer.parseInt(v5.get(0).getText()); //Pegar a marca
-			newPlayer.inserirTorneio(tempNomeModalidade,Double.valueOf(importantInfo[1]), importantInfo[2], tempDificuldadeModalidade,nota);
-			//importantInfoTorneio
-			newPlayer.test();
-			//initQuery.sendInscription
+			
+			double torneioID =  0;
+			int torneioDC = 0;
+
+			for(int i=0;i<importantInfoTorneio[0].length;i++)
+				if(importantInfoTorneio[0][i].equals(importantInfo[2])){	//Achei a coluna da linha 0 do nome do torneio
+						torneioID = Double.valueOf(importantInfoTorneio[1][i]);
+						torneioDC = Integer.parseInt(importantInfoTorneio[2][i]);
+						break;
+				}
+			System.out.println("===========TESTE MODALIADDE=================");
+
+			System.out.println("Nome da modalidade "+tempNomeModalidade+" ID do torneio"
+					+torneioID+" Nome do Torneio "+importantInfo[2]+
+						" Dificuldade do torneio "+torneioDC+" Notas"+nota);
+			
+			newPlayer.inserirTorneio(tempNomeModalidade,torneioID, importantInfo[2], torneioDC,nota);
 		}
 		else if(e.getSource() == endCadastro){
 			newPlayer.makeTupla();
 			initQuery = new Query();
 			newPlayer.test();
-			initQuery.sendInscrito(Double.valueOf(newPlayer.getPlayerID()),
-					newPlayer.getListadeModalidade().get(0).getModalidadeID(),
-					newPlayer.getListadeModalidade().get(0).getListaTorneio().get(0).getTorneioID(),
-					newPlayer.getListadeModalidade().get(0).getListaTorneio().get(0).getMarca());
+			System.out.println("Size da lista de modalidade: "+newPlayer.getListadeModalidade().size());
+			for(int n = 0; n< newPlayer.getListadeModalidade().size();n++){
+			     initQuery.sendInscrito(Double.valueOf(newPlayer.getPlayerID()),
+					newPlayer.getListadeModalidade().get(n).getModalidadeID(),
+					newPlayer.getListadeModalidade().get(n).getListaTorneio().get(0).getTorneioID(),
+					newPlayer.getListadeModalidade().get(n).getListaTorneio().get(0).getMarca());
+			}
+			tabbedPane.setSelectedIndex(0);
+			tabbedPane.remove(1);
+			tabbedPane.insertTab("Cadastro",torch, makePlayerChoicePainel("Primeira Tela"),
+					"Se cadastre em nosso evento", 1);
+			tabbedPane.setSelectedIndex(1);
 		}
 		else if(e.getSource() == sendQuery1){
 			initQuery = new Query(Q1);
@@ -386,6 +413,10 @@ public final class Janela extends JFrame implements ActionListener{
 		else if(e.getSource() == sendQuery3){
 			initQuery = new Query(Q3);
 			initQuery.sendQuery3();
+		}
+		else if(e.getSource() == endEpocaParaCadastro)
+		{
+			// Popular a tabela alocado
 		}
 		else
 			System.exit(0);

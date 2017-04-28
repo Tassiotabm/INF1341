@@ -54,9 +54,13 @@ public class Inscricao {
 					temp = t;
 					maiorNota = tempNota;
 			}
-			List<Torneio> newL = new ArrayList<Torneio>();
-			newL.add(temp);
-			m.setListaTorneio(newL);
+			if(temp == null)	
+				return;
+			else{
+				List<Torneio> newL = new ArrayList<Torneio>();
+				newL.add(temp);
+				m.setListaTorneio(newL);
+			}
 		}
 		return ;
 	}
