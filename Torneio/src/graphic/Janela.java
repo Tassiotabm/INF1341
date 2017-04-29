@@ -416,7 +416,7 @@ public final class Janela extends JFrame implements ActionListener{
 		}
 		else if(e.getSource() == endEpocaParaCadastro)
 		{
-			// Popular a tabela alocado
+			initQuery.aloca();
 		}
 		else
 			System.exit(0);

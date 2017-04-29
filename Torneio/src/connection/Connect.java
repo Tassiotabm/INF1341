@@ -10,7 +10,7 @@ public final class Connect {
 	
 	public Connect(){
 		  
-		String url = "jdbc:oracle:thin:@139.82.3.27:1521:orcl"; 
+		String url = "jdbc:oracle:thin:@localhost:1521:xe"; 
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -20,7 +20,7 @@ public final class Connect {
 		}
 
 		try {
-			con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881");
+			con = DriverManager.getConnection(url,"felipe", "felipe");
 			System.out.println("Connection Sucess.");
 		} catch(SQLException ex) {
 			System.out.println("Não consegui conectar com servidor, tentar na PUC!");

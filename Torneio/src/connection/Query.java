@@ -1,5 +1,6 @@
 package connection;
 
+import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -182,6 +183,16 @@ public class Query {
 				e1.printStackTrace();
 				System.out.println("Erro na criação do Inscrito.");
 			}
+	}
+	public void  aloca(){
+		try {
+			CallableStatement pstm = Connect.getCon().prepareCall("{call seleciona_eliminatórias}");
+			pstm.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	public void sendQuery1(){
 		if(checkQuery() == false)
