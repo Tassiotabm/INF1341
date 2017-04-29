@@ -157,7 +157,7 @@ public final class Janela extends JFrame implements ActionListener{
         JLabel filler = new JLabel(text);
         filler.setHorizontalAlignment(JLabel.CENTER);
         
-        String [][] modalidadesStrings = initQuery.getModalidades();
+        String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
         BoxModalidadeAdmnistrantionList = new JComboBox(modalidadesStrings[1]);
         
         panel.setLayout(new GridLayout(9,2));
@@ -187,7 +187,14 @@ public final class Janela extends JFrame implements ActionListener{
     }
 	 protected static JComponent makePlayerChoicePainel(String text){
 	        newPlayer = new Inscricao();
-		 	JPanel panel = new JPanel(false);        
+		 	JPanel panel = new JPanel(false);   
+		 	
+	        Feminino = new JRadioButton("feminino");
+	        Masculino = new JRadioButton("masculino");
+	        modalidadeButtonGroup = new ButtonGroup();
+	        modalidadeButtonGroup.add(Feminino);
+	        modalidadeButtonGroup.add(Masculino);
+	        
 	        panel.setLayout(new GridLayout(10,2));
 	        v3.get(0).setText("");
 	        v3.get(1).setText("");
@@ -202,11 +209,17 @@ public final class Janela extends JFrame implements ActionListener{
 	        panel.add(v3.get(2));
 	        panel.add(new JLabel("CPF"));
 	        panel.add(v3.get(3));
+	        
+	       // panel.add(new JLabel("Sexo"));
+	        panel.add(Masculino);
+	        panel.add(Feminino);
+	        
 	        panel.add(new JLabel());
 	        panel.add(sendPlayer);
 	        panel.add(new JLabel());
 	        panel.add(new JLabel());
 	        panel.add(new JLabel());
+	      
 	        return panel;
 	    }
 	
@@ -215,7 +228,7 @@ public final class Janela extends JFrame implements ActionListener{
 		
         JPanel panel = new JPanel(false);
         initQuery = new Query();
-        String [][] modalidadesStrings = initQuery.getModalidades();
+        String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
         BoxModalidadeList = new JComboBox(modalidadesStrings[1]);        
     	panel.setLayout(new GridLayout(10,2));
         panel.add(new JLabel("Escolha uma das modalidades:"));
@@ -298,7 +311,7 @@ public final class Janela extends JFrame implements ActionListener{
 			else if(Masculino.isSelected())
 				initQuery.sendModalidade(Masculino.getText());			
 
-	        String [][] modalidadesStrings = initQuery.getModalidades();
+	        String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
 	        BoxModalidadeAdmnistrantionList.removeAll();
 	        DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
 	        BoxModalidadeAdmnistrantionList.setModel( model );
@@ -306,7 +319,7 @@ public final class Janela extends JFrame implements ActionListener{
 		}
 		else if(e.getSource() == sendTornament){ //Cadastrar o torneio no banco
 			String tornamentModalidade = (String) BoxModalidadeAdmnistrantionList.getSelectedItem(); 
-			String [][] modalidadesStrings = initQuery.getModalidades();
+			String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
 			for(int i=0; i<modalidadesStrings.length; i++){
 				if(modalidadesStrings[1][i].equals(tornamentModalidade)){
 					tornamentModalidade = modalidadesStrings[0][i];
@@ -317,8 +330,8 @@ public final class Janela extends JFrame implements ActionListener{
 			initQuery.sendTornament(tornamentModalidade);
 		}
 		else if(e.getSource() == sendPlayer){	//Cadastrar o Participante no banco
-			initQuery = new Query(v3);
-			initQuery.sendPlayer();
+			initQuery = new Query(v3);			
+		    initQuery.sendPlayer((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
 			importantInfo[0] = v3.get(3).getText(); 	 
 			newPlayer.setPlayerID(v3.get(3).getText());	//Guardar CPF
 	        tabbedPane.setSelectedIndex(0);
@@ -332,7 +345,7 @@ public final class Janela extends JFrame implements ActionListener{
 			importantInfo[1] = (String) BoxModalidadeList.getSelectedItem(); 
 			String temp;
 			tempNomeModalidade = importantInfo[1];
-			String [][] modalidadesStrings = initQuery.getModalidades();
+			String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
 			for(int i=0; i<modalidadesStrings.length; i++){ //Achar na matriz o nome associado a chave primaria
 				if(modalidadesStrings[1][i].equals(importantInfo[1])){
 					temp = importantInfo[1];
@@ -416,6 +429,7 @@ public final class Janela extends JFrame implements ActionListener{
 		}
 		else if(e.getSource() == endEpocaParaCadastro)
 		{
+			System.out.println("Vou alocar geral");
 			initQuery.aloca();
 		}
 		else

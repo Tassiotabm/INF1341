@@ -47,14 +47,22 @@ public class Query {
          }
          return date;
  	}
-	public String [][] getModalidades(){
-		String ret [][] = new String[30][30];
+	public String [][] getModalidades(String gender){
+		String ret [][] = new String[50][50];
 		ResultSet rs = null;
 		int i = 0;
 		
 		PreparedStatement statement = con.getVetordeStatement().get(4);
 		try {
 			statement.setQueryTimeout(30);
+			
+			/*
+			 * 
+			 * 
+			 * 
+			 */
+			System.out.println("genero na getModalides eh: "+ gender);
+			statement.setString(1, gender);
 			rs = statement.executeQuery();
 	 	      while(rs.next())
 	 	      {
@@ -139,7 +147,7 @@ public class Query {
 				System.out.println("Erro na criação do Torneio.");
 			}
 	}
-	public void sendPlayer(){
+	public void sendPlayer(String genero){
 		Date dt = null;
 		PreparedStatement statement = con.getVetordeStatement().get(2);
 		try {
@@ -153,6 +161,8 @@ public class Query {
 			statement.setString(2,v1.get(0).getText());				   	// NOME
 			statement.setString(3,v1.get(2).getText());				   	// NACIONALIDADE
 			statement.setDate(4,dt); 									//DATA
+			statement.setString(5,genero);								// sexo
+			
 			statement.setQueryTimeout(10);
 			statement.executeUpdate();
 			System.out.println("Insert do player com sucesso.");
@@ -186,10 +196,14 @@ public class Query {
 	}
 	public void  aloca(){
 		try {
-			CallableStatement pstm = Connect.getCon().prepareCall("{call seleciona_eliminatórias}");
+			CallableStatement pstm = Connect.getCon().prepareCall("{call seleciona_eliminatorias}");
+			System.out.println("Executando Update");
 			pstm.executeUpdate();
+			System.out.println("Executei Update");
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			System.out.println("Deu merda no aloca");
 			e.printStackTrace();
 		}
 		
