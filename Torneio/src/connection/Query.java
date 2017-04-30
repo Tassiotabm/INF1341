@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Vector;
 import javax.swing.JTextField;
 
@@ -56,12 +55,6 @@ public class Query {
 		try {
 			statement.setQueryTimeout(30);
 			
-			/*
-			 * 
-			 * 
-			 * 
-			 */
-			//System.out.println("genero na getModalides eh: "+ gender);
 			statement.setString(1, gender);
 			rs = statement.executeQuery();
 	 	      while(rs.next())
@@ -111,7 +104,6 @@ public class Query {
 		String ret [][] = new String[30][30];
 		ResultSet rs = null;
 		int i = 0;
-		System.out.println(id_modalidade);
 		double id_mod = Double.valueOf(id_modalidade);
 		
 		PreparedStatement statement = con.getVetordeStatement().get(3);
@@ -137,9 +129,30 @@ public class Query {
 		return ret;
 	}
 	
-	
+	public void sendData(Double modalidadeID , int serieID, String data){
+		if(checkQuery() == false)
+			return;
+		Date dt = null;
+		try {
+			dt = formataData(data);
+		} catch (Exception e) {
+			System.out.println("Erro na geração de Data");
+		}
+		PreparedStatement statement = con.getVetordeStatement().get(10);
+		try {
+			statement.setDate(1,dt);	
+			statement.setInt(2,serieID);
+			statement.setDouble(3,modalidadeID);
+			statement.setQueryTimeout(30);
+			statement.executeUpdate();
+			System.out.println("Insert da data feito com sucesso.");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Erro na insercao da Data.");
+		}
+	}
 	public void sendModalidade(String genero){
-		System.out.println("Entrei na modalidade");
 		if(checkQuery() == false)
 			return;
 		PreparedStatement statement = con.getVetordeStatement().get(0);
@@ -225,13 +238,7 @@ public class Query {
 			}
 	}
 	public void sendResultado(int resultado,Double participanteID,Double modalidadeID,int serieID){
-		Date dt = null;
-		//dt = Calendar.getInstance().get;
-		try {
-			dt = formataData(v1.get(1).getText());
-		} catch (Exception e) {
-			System.out.println("Erro na geração de Data");
-		}
+
 		PreparedStatement statement = con.getVetordeStatement().get(8);
 		try {
 			statement.setDouble(1,resultado); 	//Participante ID
@@ -256,13 +263,6 @@ public class Query {
 		PreparedStatement statement = con.getVetordeStatement().get(9);
 		try {
 			statement.setQueryTimeout(30);
-			
-			/*
-			 * 
-			 * 
-			 * 
-			 */
-			//System.out.println("genero na getModalides eh: "+ gender);
 			
 			statement.setDouble(1, Double.valueOf(modalidadeID));
 			statement.setInt(2, serieID);
