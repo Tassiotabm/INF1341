@@ -21,7 +21,7 @@ public final class Connect {
 		}
 
 		try {
-			con = DriverManager.getConnection(url,"PUC", "PUC");
+			con = DriverManager.getConnection(url,"felipe", "felipe");
 			//con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881"); PUC
 			System.out.println("Connection Sucess.");
 		} catch(SQLException ex) {
@@ -44,7 +44,12 @@ public final class Connect {
 		  vetordeStatement.add(connection.prepareStatement("insert into INSCRITO values(?,?,?,?)"));
 		  vetordeStatement.add(connection.prepareStatement("INSERT INTO ALOCADO values(?,?,?,?,?)"));
 		  vetordeStatement.add(connection.prepareStatement("select ID_PARTICIPANTE FROM ALOCADO WHERE ID_MODALIDADE = ? and ID_TORNEIO"));
-		  vetordeStatement.add(connection.prepareStatement("INSERT INTO ALOCADO(resultado) values(?) WHERE ID_PARTICIPANTE = ? and ID_MODALIDADE = ?"));
+		  vetordeStatement.add(connection.prepareStatement("UPDATE ALOCADO SET resultado = ? WHERE ID_PARTICIPANTE = ? and ID_MODALIDADE = ? and ID_SERIE = ?"));
+		  vetordeStatement.add(connection.prepareStatement("SELECT NOME,ID_PARTICIPANTE FROM PARTICIPANTE WHERE ID_PARTICIPANTE IN( SELECT ID_PARTICIPANTE FROM ALOCADO WHERE ID_MODALIDADE = ? and ID_SERIE = ?)"));
+		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET DATAINI = ? WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
+		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET STATUS = 'executada' WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
+		  vetordeStatement.add(connection.prepareStatement("SELECT aloc.NUMERO_PART,aloc.RESULTADO,modal.NOME FROM ALOCADO aloc JOIN MODALIDADE modal ON modal.ID_MODALIDADE = aloc.ID_MODALIDADE WHERE aloc.ID_PARTICIPANTE = ?"));
+
 	}
 	public static Connection getCon() {
 		return con;

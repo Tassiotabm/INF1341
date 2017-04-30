@@ -234,19 +234,53 @@ public class Query {
 		}
 		PreparedStatement statement = con.getVetordeStatement().get(8);
 		try {
-			statement.setDouble(1,participanteID); 	//Participante ID
-			statement.setDouble(2,serieID); 	//Modalidade ID
-			statement.setDouble(3,modalidadeID); 	//Torneio ID
-			statement.setInt(4,0);		//Marca
+			statement.setDouble(1,resultado); 	//Participante ID
+			statement.setDouble(2,participanteID); 	//Participante ID
+			statement.setDouble(3,modalidadeID);
+			statement.setDouble(4,serieID); 	//Modalidade ID
 			statement.setQueryTimeout(30);
 			statement.executeUpdate();
 			System.out.println("Insert de inscrito feito com sucesso.");
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			System.out.println("Erro na criação do Inscrito.");
+			System.out.println("Erro no update do resultado");
 		}
 	}
+	
+	public String [][] getParticipante(String modalidadeID, int serieID){
+		String ret [][] = new String[50][50];
+		ResultSet rs = null;
+		int i = 0;
+		
+		PreparedStatement statement = con.getVetordeStatement().get(9);
+		try {
+			statement.setQueryTimeout(30);
+			
+			/*
+			 * 
+			 * 
+			 * 
+			 */
+			//System.out.println("genero na getModalides eh: "+ gender);
+			
+			statement.setDouble(1, Double.valueOf(modalidadeID));
+			statement.setInt(2, serieID);
+			rs = statement.executeQuery();
+	 	      while(rs.next())
+	 	      {
+	 	    	ret [0][i] = rs.getString("NOME");
+	 	    	ret [1][i] = rs.getString("ID_PARTICIPANTE");
+	 	        i++;
+	 	      }
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Erro na conexao da query do qpox.");
+		}		
+		return ret;
+	}
+	
 	public void  aloca(){
 		try {
 			CallableStatement pstm = Connect.getCon().prepareCall("{call seleciona_eliminatorias}");

@@ -33,7 +33,7 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JButton sendTornament = new JButton("Cadastrar Torneio");
 	private static JButton sendPlayer = new JButton("Cadastrar Competidor");
 	private static JButton getPlayerTorneio = new JButton("Cadastrar Torneio Desejado");
-	private static JButton cadastrarSerie = new JButton("Cadastrar marca");
+	private static JButton cadastrarMarca = new JButton("Cadastrar marca");
 	private static JButton sendQuery1 = new JButton("Send");
 	private static JButton sendQuery2 = new JButton("Send");
 	private static JButton sendQuery3 = new JButton("Send");
@@ -54,6 +54,7 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JTextField Q3 = new JTextField();
 	private static String [] importantInfo = new String [3];
 	private static String [][] importantInfoTorneio;
+	private static String [][] participanteStrings;
 	private static String tempNomeModalidade = null;
 	private static String tempSeriesModalidade,tempSeriesTornament,tempSeriesPlayer;
 	private static Query initQuery;
@@ -69,7 +70,7 @@ public final class Janela extends JFrame implements ActionListener{
 	@SuppressWarnings("rawtypes")
 	private static JComboBox boxTornamentSerieList;
 	@SuppressWarnings("rawtypes")
-	private static JComboBox boxParticipantetSerieList;
+	private static JComboBox boxParticipanteSerieList;
     private static JRadioButton Feminino,femininoTornamentAdministracao;
     private static JRadioButton Masculino,masculinoTornamentAdministracao;
     private static JRadioButton femininoSeries;
@@ -84,6 +85,7 @@ public final class Janela extends JFrame implements ActionListener{
     private static ButtonGroup tornamentButtonAdministrationGroup;
     private static ButtonGroup serieButtonGroupSexo;
     private static ButtonGroup serieButtonGroupModalidade;
+    private static int participanteSerieIndex;
 
 	public Janela(){
         initQuery = new Query();
@@ -103,7 +105,7 @@ public final class Janela extends JFrame implements ActionListener{
 		endCadastro.addActionListener(this);
 		returnModalidade.addActionListener(this);
 		endEpocaParaCadastro.addActionListener(this);
-		cadastrarSerie.addActionListener(this);
+		cadastrarMarca.addActionListener(this);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		createTabs();
@@ -172,7 +174,7 @@ public final class Janela extends JFrame implements ActionListener{
         
         BoxModalidadeSerieList = new JComboBox();
         boxTornamentSerieList = new JComboBox();
-        boxParticipantetSerieList = new JComboBox();
+        boxParticipanteSerieList = new JComboBox();
                 
         femininoSeries.addActionListener (new ActionListener () {
             public void actionPerformed(ActionEvent e) {
@@ -212,42 +214,22 @@ public final class Janela extends JFrame implements ActionListener{
     					break;
     				}
     			}
-                
-                boxTornamentSerieList.removeAllItems();
-				String [][] torneiosStrings = initQuery.getTorneios(torneioLista[0]);
-    	        DefaultComboBoxModel model = new DefaultComboBoxModel( torneiosStrings[0] );
-    	        boxTornamentSerieList.setModel( model );
+    			
+    	        int serieID = 0;
+				if(eliminatoria.isSelected())
+    	        	serieID = 1;
+    	        else if(semifinal.isSelected())
+    	        	serieID = 2;
+    	        else if(finalmatchs.isSelected())
+    	        	serieID = 3;
+    	        
+                boxParticipanteSerieList.removeAllItems();
+				participanteStrings = initQuery.getParticipante(tempSeriesModalidade,serieID);
+    	        DefaultComboBoxModel model = new DefaultComboBoxModel( participanteStrings[0] );
+    	        boxParticipanteSerieList.setModel( model );
             }
         });
         
-       boxTornamentSerieList.addActionListener (new ActionListener () {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Torneio escolhido:" + boxTornamentSerieList.getSelectedItem());
-                if(boxTornamentSerieList.getSelectedItem() == null)
-                	return;
-                
-    			String torneioEscolhido = (String) boxTornamentSerieList.getSelectedItem(); 
-    			String [][] torneiosStrings = initQuery.getTorneios(tempSeriesModalidade);
-    			
-    			
-    			for(int i=0; i<torneiosStrings.length; i++)
-    			{ //Achar na matriz o nome associado a chave primaria
-    				if(torneiosStrings[0][i].equals(torneioEscolhido))
-    				{
-    					tempSeriesTornament = torneiosStrings[1][i];
-    					break;
-    				}
-    			}
-    			
-    			System.out.println("ID do torneio: "+ tempSeriesTornament + " ID da modalidade" + tempSeriesModalidade);
-    			//boxParticipantetSerieList.removeAllItems();
-				//String [][] playerStrings = initQuery.getPlayers(tempSeriesTornament,tempSeriesModalidade);
-    	       // DefaultComboBoxModel model = new DefaultComboBoxModel( playerStrings[0] );
-    	       // boxParticipantetSerieList.setModel( model );
-    			
-    			// COLAR EM tempSeriesPlayer O ID DO PÁRTICIPANTE
-            }
-        });
         
         panel.add(new JLabel("Escolha o sexo da modalidade:"));
         panel.add(new JLabel(""));
@@ -264,11 +246,11 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(new JLabel("Escolha o torneio"));
         panel.add(boxTornamentSerieList);
         panel.add(new JLabel("Escolha um Participante"));
-        panel.add(boxParticipantetSerieList);
+        panel.add(boxParticipanteSerieList);
         panel.add(new JLabel("Coloque o resultado"));
         panel.add(notaSerie);
         panel.add(new JLabel(""));
-        panel.add(cadastrarSerie);
+        panel.add(cadastrarMarca);
 
         
         return panel;    	
@@ -576,17 +558,19 @@ public final class Janela extends JFrame implements ActionListener{
 					"Se cadastre em nosso evento", 1);
 			tabbedPane.setSelectedIndex(1);
 		}
-		else if(e.getSource() == cadastrarSerie){
-			int serieID,resultado;
+		else if(e.getSource() == cadastrarMarca){
+			int serieID = 0,resultado;
 			initQuery = new Query();
 	        if(eliminatoria.isSelected())
-	        	serieID = 0;
-	        else if(semifinal.isSelected())
 	        	serieID = 1;
-	        else if(finalmatchs.isSelected())
+	        else if(semifinal.isSelected())
 	        	serieID = 2;
+	        else if(finalmatchs.isSelected())
+	        	serieID = 3;
 	        resultado = Integer.parseInt(notaSerie.getText());
-			//initQuery.sendResultado(resultado, tempSeriesPlayer, tempSeriesModalidade, serieID);
+	        participanteSerieIndex = boxParticipanteSerieList.getSelectedIndex();
+	        
+			initQuery.sendResultado(resultado, Double.valueOf(participanteStrings[1][participanteSerieIndex]) ,  Double.valueOf(tempSeriesModalidade), serieID);
 		}
 		else if(e.getSource() == sendQuery1){
 			initQuery = new Query(Q1);
