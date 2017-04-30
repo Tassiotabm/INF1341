@@ -33,6 +33,7 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JButton sendTornament = new JButton("Cadastrar Torneio");
 	private static JButton sendPlayer = new JButton("Cadastrar Competidor");
 	private static JButton getPlayerTorneio = new JButton("Cadastrar Torneio Desejado");
+	private static JButton cadastrarSerie = new JButton("Cadastrar marca");
 	private static JButton sendQuery1 = new JButton("Send");
 	private static JButton sendQuery2 = new JButton("Send");
 	private static JButton sendQuery3 = new JButton("Send");
@@ -47,12 +48,14 @@ public final class Janela extends JFrame implements ActionListener{
 	private static Vector<JTextField> v2 = new TextFields(2).getVectorText();
 	private static Vector<JTextField> v3 = new TextFields(4).getVectorText();
 	private static Vector<JTextField> v5 = new TextFields(1).getVectorText();
+	private static JTextField notaSerie = new JTextField();
 	private static JTextField Q1 = new JTextField();
 	private static JTextField Q2 = new JTextField();
 	private static JTextField Q3 = new JTextField();
 	private static String [] importantInfo = new String [3];
 	private static String [][] importantInfoTorneio;
 	private static String tempNomeModalidade = null;
+	private static String tempSeriesModalidade,tempSeriesTornament,tempSeriesPlayer;
 	private static Query initQuery;
 	private static Inscricao newPlayer;
 	@SuppressWarnings("rawtypes")
@@ -61,9 +64,26 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JComboBox BoxTornamentList;
 	@SuppressWarnings("rawtypes")
 	private static JComboBox BoxModalidadeAdmnistrantionList;
-    private static JRadioButton Feminino;
-    private static JRadioButton Masculino;
-    private static ButtonGroup modalidadeButtonGroup;
+	@SuppressWarnings("rawtypes")
+	private static JComboBox BoxModalidadeSerieList;
+	@SuppressWarnings("rawtypes")
+	private static JComboBox boxTornamentSerieList;
+	@SuppressWarnings("rawtypes")
+	private static JComboBox boxParticipantetSerieList;
+    private static JRadioButton Feminino,femininoTornamentAdministracao;
+    private static JRadioButton Masculino,masculinoTornamentAdministracao;
+    private static JRadioButton femininoSeries;
+    private static JRadioButton masculinoSeries;
+    private static JRadioButton eliminatoria;
+    private static JRadioButton semifinal;
+    private static JRadioButton finalmatchs;
+    private static JRadioButton FemininoPlayerChoice;
+    private static JRadioButton MasculinoPlayerChoice;
+
+    private static ButtonGroup modalidadeButtonAdministrationGroup;
+    private static ButtonGroup tornamentButtonAdministrationGroup;
+    private static ButtonGroup serieButtonGroupSexo;
+    private static ButtonGroup serieButtonGroupModalidade;
 
 	public Janela(){
         initQuery = new Query();
@@ -83,7 +103,9 @@ public final class Janela extends JFrame implements ActionListener{
 		endCadastro.addActionListener(this);
 		returnModalidade.addActionListener(this);
 		endEpocaParaCadastro.addActionListener(this);
+		cadastrarSerie.addActionListener(this);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		createTabs();
 	}
 	private void createTabs(){
@@ -128,37 +150,171 @@ public final class Janela extends JFrame implements ActionListener{
 	//Painel que aparece quando a aba é selecioada.
 	//É aqui que eu devo colocar outros componentes
 	//Como botão/textfield/forms.
-    protected static JComponent makeSeriesPanel(String text){
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	protected static JComponent makeSeriesPanel(String text){
         JPanel panel = new JPanel(false);        
-        panel.setLayout(new GridLayout(6,2));
-        panel.add(new JButton("Teste0"));
-        panel.add(new JButton("Teste1"));
-        panel.add(new JButton("Teste2"));
-        panel.add(new JButton("Teste3"));
-        panel.add(new JButton("Teste4"));
-        panel.add(new JLabel("Teste5"));
-        panel.add(new JButton("Teste1"));
-        panel.add(new JButton("Teste2"));
-        panel.add(new JLabel("Teste3"));
-        panel.add(new JButton("Teste4"));
+        panel.setLayout(new GridLayout(10,2));
+  
+        eliminatoria = new JRadioButton("Eliminatoria");
+        semifinal = new JRadioButton("Semi-finais");
+        finalmatchs = new JRadioButton("Finais");
+        femininoSeries = new JRadioButton("feminino");
+        masculinoSeries = new JRadioButton("masculino");
+        
+        serieButtonGroupModalidade = new ButtonGroup();
+        serieButtonGroupModalidade.add(eliminatoria);
+        serieButtonGroupModalidade.add(semifinal);
+        serieButtonGroupModalidade.add(finalmatchs);
+        
+        serieButtonGroupSexo = new ButtonGroup();
+        serieButtonGroupSexo.add(femininoSeries);
+        serieButtonGroupSexo.add(masculinoSeries);
+        
+        BoxModalidadeSerieList = new JComboBox();
+        boxTornamentSerieList = new JComboBox();
+        boxParticipantetSerieList = new JComboBox();
+                
+        femininoSeries.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                //if(BoxModalidadeSerieList.)
+            	BoxModalidadeSerieList.removeAllItems();
+                String [][] modalidadesStrings = initQuery.getModalidades((femininoSeries.isSelected())? femininoSeries.getText() : masculinoSeries.getText());
+    	        DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
+    	        BoxModalidadeSerieList.setModel( model );
+            }
+        });
+        
+        masculinoSeries.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                BoxModalidadeSerieList.removeAllItems();
+    	        String [][] modalidadesStrings = initQuery.getModalidades((femininoSeries.isSelected())? femininoSeries.getText() : masculinoSeries.getText());
+    	        DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
+    	        BoxModalidadeSerieList.setModel( model );
+            }
+        });
+                
+        BoxModalidadeSerieList.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(BoxModalidadeSerieList.getSelectedItem());
+                
+                if(BoxModalidadeSerieList.getSelectedItem() == null)
+                	return;
+                
+    			String modalidadeEscolhida = (String) BoxModalidadeSerieList.getSelectedItem(); 
+    			String [] torneioLista = new String[1];
+    			String [][] modalidadesStrings = initQuery.getModalidades((femininoSeries.isSelected())? femininoSeries.getText() : masculinoSeries.getText());
+    			for(int i=0; i<modalidadesStrings.length; i++){ //Achar na matriz o nome associado a chave primaria
+    				if(modalidadesStrings[1][i].equals(modalidadeEscolhida))
+    				{
+    					torneioLista[0] = modalidadesStrings[0][i];
+    					tempSeriesModalidade = modalidadesStrings[0][i];
+    					//System.out.println("Valor da "+torneioLista[0]);
+    					break;
+    				}
+    			}
+                
+                boxTornamentSerieList.removeAllItems();
+				String [][] torneiosStrings = initQuery.getTorneios(torneioLista[0]);
+    	        DefaultComboBoxModel model = new DefaultComboBoxModel( torneiosStrings[0] );
+    	        boxTornamentSerieList.setModel( model );
+            }
+        });
+        
+       boxTornamentSerieList.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Torneio escolhido:" + boxTornamentSerieList.getSelectedItem());
+                if(boxTornamentSerieList.getSelectedItem() == null)
+                	return;
+                
+    			String torneioEscolhido = (String) boxTornamentSerieList.getSelectedItem(); 
+    			String [][] torneiosStrings = initQuery.getTorneios(tempSeriesModalidade);
+    			
+    			
+    			for(int i=0; i<torneiosStrings.length; i++)
+    			{ //Achar na matriz o nome associado a chave primaria
+    				if(torneiosStrings[0][i].equals(torneioEscolhido))
+    				{
+    					tempSeriesTornament = torneiosStrings[1][i];
+    					break;
+    				}
+    			}
+    			
+    			System.out.println("ID do torneio: "+ tempSeriesTornament + " ID da modalidade" + tempSeriesModalidade);
+    			//boxParticipantetSerieList.removeAllItems();
+				//String [][] playerStrings = initQuery.getPlayers(tempSeriesTornament,tempSeriesModalidade);
+    	       // DefaultComboBoxModel model = new DefaultComboBoxModel( playerStrings[0] );
+    	       // boxParticipantetSerieList.setModel( model );
+    			
+    			// COLAR EM tempSeriesPlayer O ID DO PÁRTICIPANTE
+            }
+        });
+        
+        panel.add(new JLabel("Escolha o sexo da modalidade:"));
+        panel.add(new JLabel(""));
+        panel.add(femininoSeries);
+        panel.add(masculinoSeries);
+        panel.add(new JLabel("Escolha a serie:"));
+        panel.add(new JLabel(""));
+        panel.add(eliminatoria);
+        panel.add(semifinal);
+        panel.add(finalmatchs);
+        panel.add(new JLabel(""));
+        panel.add(new JLabel("Escolha a modalidade"));
+        panel.add(BoxModalidadeSerieList);        
+        panel.add(new JLabel("Escolha o torneio"));
+        panel.add(boxTornamentSerieList);
+        panel.add(new JLabel("Escolha um Participante"));
+        panel.add(boxParticipantetSerieList);
+        panel.add(new JLabel("Coloque o resultado"));
+        panel.add(notaSerie);
+        panel.add(new JLabel(""));
+        panel.add(cadastrarSerie);
 
+        
         return panel;    	
     }
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected static JComponent makeAdministrationPanel(String text) {
     	
         JPanel panel = new JPanel(false);
-        Feminino = new JRadioButton("Feminino");
-        Masculino = new JRadioButton("Masculino");
-        modalidadeButtonGroup = new ButtonGroup();
-        modalidadeButtonGroup.add(Feminino);
-        modalidadeButtonGroup.add(Masculino);
+        
+        Feminino = new JRadioButton("feminino");
+        Masculino = new JRadioButton("masculino");
+        
+        tornamentButtonAdministrationGroup = new ButtonGroup();
+        femininoTornamentAdministracao = new JRadioButton("feminino");
+        masculinoTornamentAdministracao = new JRadioButton("masculino");
+        tornamentButtonAdministrationGroup.add(femininoTornamentAdministracao);
+        tornamentButtonAdministrationGroup.add(masculinoTornamentAdministracao);
+        
+        modalidadeButtonAdministrationGroup = new ButtonGroup();
+        modalidadeButtonAdministrationGroup.add(Feminino);
+        modalidadeButtonAdministrationGroup.add(Masculino);
+        
+        BoxModalidadeAdmnistrantionList = new JComboBox();
+        
+        femininoTornamentAdministracao.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+            	BoxModalidadeAdmnistrantionList.removeAllItems();
+                String [][] modalidadesStrings = initQuery.getModalidades((femininoTornamentAdministracao.isSelected())? femininoTornamentAdministracao.getText() : masculinoTornamentAdministracao.getText());
+                DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
+    	        BoxModalidadeAdmnistrantionList.setModel( model );
+            }
+        });
+        
+        masculinoTornamentAdministracao.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+            	BoxModalidadeAdmnistrantionList.removeAllItems();
+                String [][] modalidadesStrings = initQuery.getModalidades((femininoTornamentAdministracao.isSelected())? femininoTornamentAdministracao.getText() : masculinoTornamentAdministracao.getText());
+                DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
+    	        BoxModalidadeAdmnistrantionList.setModel( model );
+            }
+        });
+
 
         JLabel filler = new JLabel(text);
         filler.setHorizontalAlignment(JLabel.CENTER);
         
-        String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
-        BoxModalidadeAdmnistrantionList = new JComboBox(modalidadesStrings[1]);
         
         panel.setLayout(new GridLayout(9,2));
         
@@ -166,7 +322,6 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(v1.get(0));
         panel.add(new JLabel("Distância da Modalidade"));
         panel.add(v1.get(1));
-        
         /**************/
         panel.add(Masculino);
         panel.add(Feminino);
@@ -177,6 +332,10 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(v2.get(0));
         panel.add(new JLabel("Dificuldade do Torneio"));
         panel.add(v2.get(1));
+        /**************/
+        panel.add(masculinoTornamentAdministracao);
+        panel.add(femininoTornamentAdministracao);
+        /*************/
         panel.add(new JLabel("Escolha a Modalidade"));
         panel.add(BoxModalidadeAdmnistrantionList);
         panel.add(sendTornament);
@@ -189,11 +348,11 @@ public final class Janela extends JFrame implements ActionListener{
 	        newPlayer = new Inscricao();
 		 	JPanel panel = new JPanel(false);   
 		 	
-	        Feminino = new JRadioButton("feminino");
-	        Masculino = new JRadioButton("masculino");
-	        modalidadeButtonGroup = new ButtonGroup();
-	        modalidadeButtonGroup.add(Feminino);
-	        modalidadeButtonGroup.add(Masculino);
+	        FemininoPlayerChoice = new JRadioButton("feminino");
+	        MasculinoPlayerChoice = new JRadioButton("masculino");
+	        modalidadeButtonAdministrationGroup = new ButtonGroup();
+	        modalidadeButtonAdministrationGroup.add(FemininoPlayerChoice);
+	        modalidadeButtonAdministrationGroup.add(MasculinoPlayerChoice);
 	        
 	        panel.setLayout(new GridLayout(10,2));
 	        v3.get(0).setText("");
@@ -211,8 +370,8 @@ public final class Janela extends JFrame implements ActionListener{
 	        panel.add(v3.get(3));
 	        
 	       // panel.add(new JLabel("Sexo"));
-	        panel.add(Masculino);
-	        panel.add(Feminino);
+	        panel.add(MasculinoPlayerChoice);
+	        panel.add(FemininoPlayerChoice);
 	        
 	        panel.add(new JLabel());
 	        panel.add(sendPlayer);
@@ -302,19 +461,20 @@ public final class Janela extends JFrame implements ActionListener{
 		return newimg;
     }
  	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource() == sendModalidade){
 			initQuery = new Query(v1);
-			if(Feminino.isSelected())
+			if(Feminino.isSelected()){
 				initQuery.sendModalidade(Feminino.getText());
-			else if(Masculino.isSelected())
-				initQuery.sendModalidade(Masculino.getText());			
+			}
+			else if(Masculino.isSelected()){
+				initQuery.sendModalidade(Masculino.getText());		
+			}
 
-	        String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
-	        BoxModalidadeAdmnistrantionList.removeAll();
+	        /*String [][] modalidadesStrings = initQuery.getModalidades((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
+	        BoxModalidadeAdmnistrantionList.removeAllItems();
 	        DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
-	        BoxModalidadeAdmnistrantionList.setModel( model );
+	        BoxModalidadeAdmnistrantionList.setModel( model );*/
 	        
 		}
 		else if(e.getSource() == sendTornament){ //Cadastrar o torneio no banco
@@ -331,7 +491,8 @@ public final class Janela extends JFrame implements ActionListener{
 		}
 		else if(e.getSource() == sendPlayer){	//Cadastrar o Participante no banco
 			initQuery = new Query(v3);			
-		    initQuery.sendPlayer((Feminino.isSelected())? Feminino.getText() : Masculino.getText());
+
+		    initQuery.sendPlayer((FemininoPlayerChoice.isSelected())? FemininoPlayerChoice.getText() : MasculinoPlayerChoice.getText());
 			importantInfo[0] = v3.get(3).getText(); 	 
 			newPlayer.setPlayerID(v3.get(3).getText());	//Guardar CPF
 	        tabbedPane.setSelectedIndex(0);
@@ -415,6 +576,18 @@ public final class Janela extends JFrame implements ActionListener{
 					"Se cadastre em nosso evento", 1);
 			tabbedPane.setSelectedIndex(1);
 		}
+		else if(e.getSource() == cadastrarSerie){
+			int serieID,resultado;
+			initQuery = new Query();
+	        if(eliminatoria.isSelected())
+	        	serieID = 0;
+	        else if(semifinal.isSelected())
+	        	serieID = 1;
+	        else if(finalmatchs.isSelected())
+	        	serieID = 2;
+	        resultado = Integer.parseInt(notaSerie.getText());
+			//initQuery.sendResultado(resultado, tempSeriesPlayer, tempSeriesModalidade, serieID);
+		}
 		else if(e.getSource() == sendQuery1){
 			initQuery = new Query(Q1);
 			initQuery.sendQuery1();
@@ -435,4 +608,7 @@ public final class Janela extends JFrame implements ActionListener{
 		else
 			System.exit(0);
 	}
+	
+	
+	
 }

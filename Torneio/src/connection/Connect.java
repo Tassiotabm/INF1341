@@ -11,6 +11,7 @@ public final class Connect {
 	public Connect(){
 		  
 		String url = "jdbc:oracle:thin:@localhost:1521:xe"; 
+		//String url = "jdbc:oracle:thin:@139.82.3.27:1521:orcl"; PUC
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -20,7 +21,8 @@ public final class Connect {
 		}
 
 		try {
-			con = DriverManager.getConnection(url,"felipe", "felipe");
+			con = DriverManager.getConnection(url,"PUC", "PUC");
+			//con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881"); PUC
 			System.out.println("Connection Sucess.");
 		} catch(SQLException ex) {
 			System.out.println("Não consegui conectar com servidor, tentar na PUC!");
@@ -41,7 +43,8 @@ public final class Connect {
 		  vetordeStatement.add(connection.prepareStatement("select NOME,ID_MODALIDADE from MODALIDADE WHERE SEXO = ? "));
 		  vetordeStatement.add(connection.prepareStatement("insert into INSCRITO values(?,?,?,?)"));
 		  vetordeStatement.add(connection.prepareStatement("INSERT INTO ALOCADO values(?,?,?,?,?)"));
-
+		  vetordeStatement.add(connection.prepareStatement("select ID_PARTICIPANTE FROM ALOCADO WHERE ID_MODALIDADE = ? and ID_TORNEIO"));
+		  vetordeStatement.add(connection.prepareStatement("INSERT INTO ALOCADO(resultado) values(?) WHERE ID_PARTICIPANTE = ? and ID_MODALIDADE = ?"));
 	}
 	public static Connection getCon() {
 		return con;

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
+import java.util.Calendar;
 import java.util.Vector;
 import javax.swing.JTextField;
 
@@ -61,7 +61,7 @@ public class Query {
 			 * 
 			 * 
 			 */
-			System.out.println("genero na getModalides eh: "+ gender);
+			//System.out.println("genero na getModalides eh: "+ gender);
 			statement.setString(1, gender);
 			rs = statement.executeQuery();
 	 	      while(rs.next())
@@ -70,7 +70,6 @@ public class Query {
 	 	    	ret [1][i] = rs.getString("NOME");
 	 	        i++;
 	 	      }
-				System.out.println("comboBOX da Modalidade feita com sucesso.");
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -79,6 +78,35 @@ public class Query {
 		return ret;
 	}
 	public String [][] getTorneios(String id_modalidade){
+
+		String ret [][] = new String[30][30];
+		ResultSet rs = null;
+		int i = 0;
+		System.out.println(id_modalidade);
+		double id_mod = Double.valueOf(id_modalidade);
+		
+		PreparedStatement statement = con.getVetordeStatement().get(3);
+		try {
+			statement.setQueryTimeout(30);
+			statement.setDouble(1,id_mod);
+			rs = statement.executeQuery();
+	 	      while(rs.next())
+	 	      {
+	 	    	ret [0][i] = rs.getString("NOME");
+	 	    	ret [1][i] = rs.getString("ID_TORNEIO");
+	 	    	ret [2][i] = rs.getString("DIFICULDADE");
+	 	    	System.out.println(ret [0][i] + " " + ret [1][i] + " "+ ret [2][i]);
+	 	        i++;
+	 	      }
+	 	    } catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Erro na conexao da query do qpox.");
+		}		
+		return ret;
+	}
+	
+	public String [][] getPlayers(String id_torneio,String id_modalidade){
 
 		String ret [][] = new String[30][30];
 		ResultSet rs = null;
@@ -109,7 +137,9 @@ public class Query {
 		return ret;
 	}
 	
+	
 	public void sendModalidade(String genero){
+		System.out.println("Entrei na modalidade");
 		if(checkQuery() == false)
 			return;
 		PreparedStatement statement = con.getVetordeStatement().get(0);
@@ -193,6 +223,29 @@ public class Query {
 				e1.printStackTrace();
 				System.out.println("Erro na criação do Inscrito.");
 			}
+	}
+	public void sendResultado(int resultado,Double participanteID,Double modalidadeID,int serieID){
+		Date dt = null;
+		//dt = Calendar.getInstance().get;
+		try {
+			dt = formataData(v1.get(1).getText());
+		} catch (Exception e) {
+			System.out.println("Erro na geração de Data");
+		}
+		PreparedStatement statement = con.getVetordeStatement().get(8);
+		try {
+			statement.setDouble(1,participanteID); 	//Participante ID
+			statement.setDouble(2,serieID); 	//Modalidade ID
+			statement.setDouble(3,modalidadeID); 	//Torneio ID
+			statement.setInt(4,0);		//Marca
+			statement.setQueryTimeout(30);
+			statement.executeUpdate();
+			System.out.println("Insert de inscrito feito com sucesso.");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Erro na criação do Inscrito.");
+		}
 	}
 	public void  aloca(){
 		try {
