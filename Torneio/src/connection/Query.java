@@ -281,9 +281,35 @@ public class Query {
 		return ret;
 	}
 	
-	public void encerramento(int serieID,Double modalidadeID){
+	public String getDistancia(String modalidadeID){
+		String ret = new String();
+		ResultSet rs = null;
+		int i = 0;
+		
+		PreparedStatement statement = con.getVetordeStatement().get(13);
 		try {
-			CallableStatement pstm = Connect.getCon().prepareCall("{call seleciona_eliminatorias}");
+			statement.setQueryTimeout(30);
+			
+			statement.setDouble(1, Double.valueOf(modalidadeID));
+			
+			rs = statement.executeQuery();
+	 	      while(rs.next())
+	 	      {
+	 	    	ret = rs.getString("DISTANCIA");
+	 	        i++;
+	 	      }
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Erro na getDistancia.");
+		}		
+		return ret;
+	}
+	
+	public void encerramento_asc(int serieID,Double modalidadeID){
+		try {
+			System.out.println("{call aloca_serie_corrida("+Integer.toString(serieID)+","+Double.toString(modalidadeID)+")}");
+			CallableStatement pstm = Connect.getCon().prepareCall("{call aloca_serie_corrida("+Integer.toString(serieID)+","+Double.toString(modalidadeID)+")}");
 			System.out.println("Executando Update");
 			pstm.executeUpdate();
 			System.out.println("Executei Update");
@@ -294,6 +320,21 @@ public class Query {
 			e.printStackTrace();
 		}
 	}
+	public void encerramento_desc(int serieID,Double modalidadeID){
+		try {
+			CallableStatement pstm = Connect.getCon().prepareCall("{call aloca_serie_lancamento("+Integer.toString(serieID)+","+Double.toString(modalidadeID)+")}");
+			System.out.println("Executando Update");
+			pstm.executeUpdate();
+			System.out.println("Executei Update");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Erro no encerramento");
+			e.printStackTrace();
+		}
+	}
+
+	
 	
 	public void  aloca(){
 		try {
@@ -307,7 +348,6 @@ public class Query {
 			System.out.println("Deu merda no aloca");
 			e.printStackTrace();
 		}
-		
 	}
 	public String sendQuery1(){
 		  String retorno = "";
@@ -363,15 +403,14 @@ public class Query {
 			return retorno;
 		//Agora vamos mandar um query pro servidor
 	    ResultSet rs = null;
-		PreparedStatement statement = con.getVetordeStatement().get(5);
+		PreparedStatement statement = con.getVetordeStatement().get(14);
 			try {
-				statement.setString(1,v1.get(0).getText()); //A Geração do TorneioID é feito por Trigger!
 				statement.setQueryTimeout(30);
 			    rs = statement.executeQuery();
 				System.out.println("Query(2) feito com sucesso.");
 			     while(rs.next()){
 		             // read the result set
-		             retorno = retorno.concat( "\n" + "--------------------------------------------\n" + "Nome do participante: "+ rs.getString("nome") + "\n\t Modalidade: "+rs.getString(5)+ "\n\t Posicao do participante: " + rs.getInt("NUMERO_PART"));             
+		             retorno = retorno.concat( "\n" + "--------------------------------------------\n" + "Nome do participante: "+ rs.getString("pname") + "\n\t Modalidade: "+rs.getString("mname")+ "\n\t Resultado do participante: " + rs.getDouble("resultado"));             
 		           } 
 			} catch (SQLException e1) {
 				System.out.println("Erro ao enviar o Query3.");

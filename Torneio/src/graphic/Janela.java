@@ -1,6 +1,7 @@
 package graphic;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -19,7 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import connection.Query;
@@ -347,9 +350,9 @@ public final class Janela extends JFrame implements ActionListener{
         boxModalidadeEncerramentoList = new JComboBox();
         
         encerramentoButtonGroupModalidade = new ButtonGroup();
-        encerramentoButtonGroupModalidade.add(eliminatoriaData);
-        encerramentoButtonGroupModalidade.add(semifinalData);
-        encerramentoButtonGroupModalidade.add(finalmatchsData);
+        encerramentoButtonGroupModalidade.add(eliminatoriaEncerramento);
+        encerramentoButtonGroupModalidade.add(semifinalEncerramento);
+        encerramentoButtonGroupModalidade.add(finalmatchsEncerramento);
         
         encerramentoButtonGroupSexo = new ButtonGroup();
         encerramentoButtonGroupSexo.add(femininoEncerramento);
@@ -756,7 +759,14 @@ public final class Janela extends JFrame implements ActionListener{
 		else if(e.getSource() == sendQuery3){
 			initQuery = new Query(Q3);
 			String retorno = initQuery.sendQuery3();
-		    JOptionPane.showMessageDialog(new JFrame("Posicao dos participantes"), retorno);
+
+			   JTextArea textArea = new JTextArea(retorno);
+			   JScrollPane scrollPane = new JScrollPane(textArea);  
+			   textArea.setLineWrap(true);  
+			   textArea.setWrapStyleWord(true); 
+			   scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
+			   JOptionPane.showMessageDialog(null, scrollPane, "dialog test with textarea",  
+			                                          JOptionPane.YES_NO_OPTION);
 		}
 		else if(e.getSource() == endEpocaParaCadastro)
 		{
@@ -782,14 +792,18 @@ public final class Janela extends JFrame implements ActionListener{
 				}
 			}
 
-	        if(eliminatoriaData.isSelected())
+	        if(eliminatoriaEncerramento.isSelected())
 	        	serieID = 1;
-	        else if(semifinalData.isSelected())
+	        else if(semifinalEncerramento.isSelected())
 	        	serieID = 2;
-	        else if(finalmatchsData.isSelected())
+	        else if(finalmatchsEncerramento.isSelected())
 	        	serieID = 3;
 	        
-	        initQuery.encerramento(serieID,Double.valueOf(modalidadeEncerramentoID));
+	        if(Integer.valueOf(initQuery.getDistancia(modalidadeEncerramentoID)) != 0)
+	  
+	        	initQuery.encerramento_asc(serieID+1,Double.valueOf(modalidadeEncerramentoID));
+	        else
+	        	initQuery.encerramento_desc(serieID+1,Double.valueOf(modalidadeEncerramentoID));
 		}
 		else
 			System.exit(0);

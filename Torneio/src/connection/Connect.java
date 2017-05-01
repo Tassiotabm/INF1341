@@ -21,8 +21,8 @@ public final class Connect {
 		}
 
 		try {
-			con = DriverManager.getConnection(url,"PUC", "PUC");
-			//con = DriverManager.getConnection(url,"felipe", "felipe");
+		//	con = DriverManager.getConnection(url,"PUC", "PUC");
+			con = DriverManager.getConnection(url,"felipe", "felipe");
 			//con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881");  NAO APAGAR ESSA PORRA É DA PUC
 			System.out.println("Connection Sucess.");
 		} catch(SQLException ex) {
@@ -50,6 +50,8 @@ public final class Connect {
 		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET DATAINI = ? WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
 		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET STATUS = 'executada' WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
 		  vetordeStatement.add(connection.prepareStatement("SELECT part.id_participante,part.nome, aloc.NUMERO_PART, aloc.RESULTADO, modal.NOME FROM ALOCADO aloc, MODALIDADE modal, PARTICIPANTE part WHERE modal.ID_MODALIDADE = aloc.ID_MODALIDADE AND aloc.ID_PARTICIPANTE = part.ID_PARTICIPANTE AND part.NOME like UPPER(?)"));
+		  vetordeStatement.add(connection.prepareStatement("SELECT DISTANCIA FROM MODALIDADE WHERE ID_MODALIDADE = ?"));
+		  vetordeStatement.add(connection.prepareStatement("SELECT * FROM participante_modalidade"));
 	}
 	public static Connection getCon() {
 		return con;
