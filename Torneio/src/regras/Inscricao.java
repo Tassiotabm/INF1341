@@ -3,9 +3,6 @@ package regras;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 public class Inscricao {
 	private String playerID;
 	private List<Modalidade> listadeModalidade;
@@ -26,16 +23,17 @@ public class Inscricao {
 	public void inserirModalidade(Double modalidadeID,String modalidadeNome){
 		listadeModalidade.add(new Modalidade(modalidadeID,modalidadeNome));
 	}
-	public void inserirTorneio(String nomeModalidade,Double torneioID,String torneioNome,int torneioDificuldade,int nota){
+	public boolean inserirTorneio(String nomeModalidade,Double torneioID,String torneioNome,int torneioDificuldade,int nota){
 		for(Modalidade mod : listadeModalidade){	//Percorrer a lista de Modalidades
 			if(mod.getModalidadeNome().equals(nomeModalidade)){	//Achado a modalidade do torneio
 				if(mod.checkTorneioName(torneioNome))
-					JOptionPane.showMessageDialog(new JFrame("Cadastro não autorizado"), "Você já se cadastrou nesse torneio.");
-				else
+					return false;
+				else{
 					mod.getListaTorneio().add(new Torneio(torneioID,torneioNome,torneioDificuldade,nota)); 	//Adiciona o torneio na lista
-																										//torneio da modalidade
+				}//torneio da modalidade
 			}	
 		}
+		return true;
 	}
 	public void test(){
 		for(Modalidade v: listadeModalidade)

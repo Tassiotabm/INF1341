@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -35,6 +36,7 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JButton getPlayerTorneio = new JButton("Cadastrar Torneio Desejado");
 	private static JButton cadastrarMarca = new JButton("Cadastrar marca");
 	private static JButton cadastrarData = new JButton("Cadastrar data");
+	private static JButton encerrarSerie = new JButton("Encerrar Serie");
 	private static JButton sendQuery1 = new JButton("Send");
 	private static JButton sendQuery2 = new JButton("Send");
 	private static JButton sendQuery3 = new JButton("Send");
@@ -74,6 +76,8 @@ public final class Janela extends JFrame implements ActionListener{
 	private static JComboBox boxModalidadeDataList;
 	@SuppressWarnings("rawtypes")
 	private static JComboBox boxParticipanteSerieList;
+	@SuppressWarnings("rawtypes")
+	private static JComboBox boxModalidadeEncerramentoList;
     private static JRadioButton Feminino,femininoTornamentAdministracao;
     private static JRadioButton Masculino,masculinoTornamentAdministracao;
     private static JRadioButton femininoSeries;
@@ -81,6 +85,11 @@ public final class Janela extends JFrame implements ActionListener{
     private static JRadioButton eliminatoria;
     private static JRadioButton semifinal;
     private static JRadioButton finalmatchs;
+    private static JRadioButton eliminatoriaEncerramento;
+    private static JRadioButton semifinalEncerramento;
+    private static JRadioButton finalmatchsEncerramento;
+    private static JRadioButton femininoEncerramento;
+    private static JRadioButton masculinoEncerramento;
     private static JRadioButton FemininoPlayerChoice;
     private static JRadioButton MasculinoPlayerChoice;
     private static JRadioButton eliminatoriaData;
@@ -93,6 +102,8 @@ public final class Janela extends JFrame implements ActionListener{
     private static ButtonGroup tornamentButtonAdministrationGroup;
     private static ButtonGroup serieButtonGroupSexo;
     private static ButtonGroup serieButtonGroupModalidade;
+    private static ButtonGroup encerramentoButtonGroupSexo;
+    private static ButtonGroup encerramentoButtonGroupModalidade;
     private static int participanteSerieIndex;
 
 	public Janela(){
@@ -115,6 +126,7 @@ public final class Janela extends JFrame implements ActionListener{
 		endEpocaParaCadastro.addActionListener(this);
 		cadastrarMarca.addActionListener(this);
 		cadastrarData.addActionListener(this);
+		encerrarSerie.addActionListener(this);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		createTabs();
@@ -128,9 +140,12 @@ public final class Janela extends JFrame implements ActionListener{
 		//de tabs.
 		JComponent panel2 = makeSeriesPanel("Series");
 		JComponent panel4 = makeDataPanel("Datas");
-		subPane.addTab("Modalidades", torch, panel1,"Apenas para o staff!");
+		JComponent panel5 = makeEncerramentoPanel("Encerramento");
+		
+		subPane.addTab("Torneio", torch, panel1,"Apenas para o staff!");
 		subPane.addTab("Notas",torch,panel2,"Apenas para staff");
 		subPane.addTab("Datas",torch,panel4,"Apenas para staff");
+		subPane.addTab("Encerrar",torch,panel5,"Apenas para staff");
 		
 		tabbedPane.addTab("Administração",torch,subPane,"Apenas para staff");
 		//Um metodo para permitir o andar entre as tabs com
@@ -315,6 +330,64 @@ public final class Janela extends JFrame implements ActionListener{
         panel.add(new JLabel(""));
         panel.add(cadastrarData);
 
+        
+        return panel;    	
+    }
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	protected static JComponent makeEncerramentoPanel(String text){
+        JPanel panel = new JPanel(false);        
+        panel.setLayout(new GridLayout(10,2));
+  
+        eliminatoriaEncerramento = new JRadioButton("Eliminatoria");
+        semifinalEncerramento = new JRadioButton("Semi-finais");
+        finalmatchsEncerramento = new JRadioButton("Finais");
+        femininoEncerramento = new JRadioButton("feminino");
+        masculinoEncerramento = new JRadioButton("masculino");
+        
+        boxModalidadeEncerramentoList = new JComboBox();
+        
+        encerramentoButtonGroupModalidade = new ButtonGroup();
+        encerramentoButtonGroupModalidade.add(eliminatoriaData);
+        encerramentoButtonGroupModalidade.add(semifinalData);
+        encerramentoButtonGroupModalidade.add(finalmatchsData);
+        
+        encerramentoButtonGroupSexo = new ButtonGroup();
+        encerramentoButtonGroupSexo.add(femininoEncerramento);
+        encerramentoButtonGroupSexo.add(masculinoEncerramento);
+
+        femininoEncerramento.addActionListener (new ActionListener () {
+			public void actionPerformed(ActionEvent e) {
+				boxModalidadeEncerramentoList.removeAllItems();
+                String [][] modalidadesStrings = initQuery.getModalidades((femininoEncerramento.isSelected())? femininoEncerramento.getText() : masculinoEncerramento.getText());
+    	        DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
+    	        boxModalidadeEncerramentoList.setModel( model );
+            }
+        });
+        
+        masculinoEncerramento.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+            	boxModalidadeEncerramentoList.removeAllItems();
+                String [][] modalidadesStrings = initQuery.getModalidades((femininoEncerramento.isSelected())? femininoEncerramento.getText() : masculinoEncerramento.getText());
+    	        DefaultComboBoxModel model = new DefaultComboBoxModel( modalidadesStrings[1] );
+    	        boxModalidadeEncerramentoList.setModel( model );
+            }
+        });
+        
+        
+        panel.add(new JLabel("Escolha o sexo da modalidade:"));
+        panel.add(new JLabel(""));
+        panel.add(femininoEncerramento);
+        panel.add(masculinoEncerramento);
+        panel.add(new JLabel("Escolha a serie:"));
+        panel.add(new JLabel(""));
+        panel.add(eliminatoriaEncerramento);
+        panel.add(semifinalEncerramento);
+        panel.add(finalmatchsEncerramento);
+        panel.add(new JLabel(""));
+        panel.add(new JLabel("Escolha a modalidade"));
+        panel.add(boxModalidadeEncerramentoList);        
+        panel.add(new JLabel(""));
+        panel.add(encerrarSerie);
         
         return panel;    	
     }
@@ -596,13 +669,9 @@ public final class Janela extends JFrame implements ActionListener{
 						torneioDC = Integer.parseInt(importantInfoTorneio[2][i]);
 						break;
 				}
-			System.out.println("===========TESTE MODALIADDE=================");
 
-			System.out.println("Nome da modalidade "+tempNomeModalidade+" ID do torneio"
-					+torneioID+" Nome do Torneio "+importantInfo[2]+
-						" Dificuldade do torneio "+torneioDC+" Notas"+nota);
-			
-			newPlayer.inserirTorneio(tempNomeModalidade,torneioID, importantInfo[2], torneioDC,nota);
+			if(newPlayer.inserirTorneio(tempNomeModalidade,torneioID, importantInfo[2], torneioDC,nota) == false)
+				JOptionPane.showMessageDialog(new JFrame("Cadastro não autorizado"), "Você já se cadastrou nesse torneio.");
 		}
 		else if(e.getSource() == endCadastro){
 			newPlayer.makeTupla();
@@ -676,20 +745,51 @@ public final class Janela extends JFrame implements ActionListener{
 		}
 		else if(e.getSource() == sendQuery1){
 			initQuery = new Query(Q1);
-			initQuery.sendQuery1();
+			String retorno = initQuery.sendQuery1();
+		    JOptionPane.showMessageDialog(new JFrame("Posicao dos participantes"), retorno);
 		}
 		else if(e.getSource() == sendQuery2){
 			initQuery = new Query(Q2);
-			initQuery.sendQuery2();
+			String retorno = initQuery.sendQuery2();
+		    JOptionPane.showMessageDialog(new JFrame("Posicao dos participantes"), retorno);
 		}
 		else if(e.getSource() == sendQuery3){
 			initQuery = new Query(Q3);
-			initQuery.sendQuery3();
+			String retorno = initQuery.sendQuery3();
+		    JOptionPane.showMessageDialog(new JFrame("Posicao dos participantes"), retorno);
 		}
 		else if(e.getSource() == endEpocaParaCadastro)
 		{
-			System.out.println("Vou alocar geral");
 			initQuery.aloca();
+		}
+		else if(e.getSource() == encerrarSerie){
+			initQuery = new Query();
+			int serieID = 0;
+			String modalidadeEncerramentoID = null;
+			
+            if(boxModalidadeEncerramentoList.getSelectedItem() == null)
+            	return;
+            
+			String modalidadeEscolhida = (String) boxModalidadeEncerramentoList.getSelectedItem(); 
+			String [] torneioLista = new String[1];
+			String [][] modalidadesStrings = initQuery.getModalidades((femininoEncerramento.isSelected())? femininoEncerramento.getText() : masculinoEncerramento.getText());
+			for(int i=0; i<modalidadesStrings.length; i++){ //Achar na matriz o nome associado a chave primaria
+				if(modalidadesStrings[1][i].equals(modalidadeEscolhida))
+				{
+					torneioLista[0] = modalidadesStrings[0][i];
+					modalidadeEncerramentoID = modalidadesStrings[0][i];
+					break;
+				}
+			}
+
+	        if(eliminatoriaData.isSelected())
+	        	serieID = 1;
+	        else if(semifinalData.isSelected())
+	        	serieID = 2;
+	        else if(finalmatchsData.isSelected())
+	        	serieID = 3;
+	        
+	        initQuery.encerramento(serieID,Double.valueOf(modalidadeEncerramentoID));
 		}
 		else
 			System.exit(0);

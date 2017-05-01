@@ -21,7 +21,7 @@ public final class Connect {
 		}
 
 		try {
-			con = DriverManager.getConnection(url,"felipe", "felipe");
+			con = DriverManager.getConnection(url,"PUC", "PUC");
 			//con = DriverManager.getConnection(url,"felipe", "felipe");
 			//con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881");  NAO APAGAR ESSA PORRA É DA PUC
 			System.out.println("Connection Sucess.");
