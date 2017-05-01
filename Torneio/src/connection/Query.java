@@ -9,6 +9,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class Query {
@@ -296,19 +299,32 @@ public class Query {
 		
 	}
 	public void sendQuery1(){
-		if(checkQuery() == false)
-			return;
-		//Agora vamos mandar um query pro servidor
-		PreparedStatement statement = con.getVetordeStatement().get(0);
-			try {
-				statement.setString(1,v1.get(0).getText()); //A Geração do TorneioID é feito por Trigger!
-				statement.setQueryTimeout(30);
-				statement.executeUpdate();
-				System.out.println("Query(1) feito com sucesso.");
-			} catch (SQLException e1) {
-				System.out.println("Erro ao enviar o Query1.");
-			}
-	}
+		  
+		  if(checkQuery() == false)
+		   return ;
+		  String p1 = v1.get(0).getText();
+		  String p2 = p1.concat("%");
+
+		  //Agora vamos mandar um query pro servidor
+		      ResultSet rs = null;
+		  PreparedStatement statement = con.getVetordeStatement().get(12);
+		   try {
+		    statement.setString(1,p2); //A Geração do TorneioID é feito por Trigger!
+		    statement.setQueryTimeout(30);
+		    rs = statement.executeQuery();
+		    System.out.println("Query(1) feito com sucesso.");
+		    String retorno = "";
+		     while(rs.next()){
+		             // read the result set
+		             retorno = retorno.concat( "\n" + "--------------------------------------------\n" + "Nome do participante: "+ rs.getString("nome") + "\n\t Modalidade: "+rs.getString(5)+ "\n\t Posicao do participante: " + rs.getInt("NUMERO_PART"));             
+		           } 
+		    JOptionPane.showMessageDialog(new JFrame("Posicao dos participantes"), retorno);
+
+		   } catch (SQLException e1) {
+		    System.out.println("Erro ao enviar o Query1.");
+		    e1.printStackTrace();
+		   }
+		 }
 	public void sendQuery2(){
 		if(checkQuery() == false)
 			return;
