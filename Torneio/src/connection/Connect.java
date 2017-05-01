@@ -49,6 +49,7 @@ public final class Connect {
 		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET DATAINI = ? WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
 		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET STATUS = 'executada' WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
 		  vetordeStatement.add(connection.prepareStatement("SELECT aloc.NUMERO_PART,aloc.RESULTADO,modal.NOME FROM ALOCADO aloc JOIN MODALIDADE modal ON modal.ID_MODALIDADE = aloc.ID_MODALIDADE WHERE aloc.ID_PARTICIPANTE = ?"));
+		  vetordeStatement.add(connection.prepareStatement("SELECT part.id_participante,part.nome, aloc.NUMERO_PART, aloc.RESULTADO, modal.NOME FROM ALOCADO aloc, MODALIDADE modal, PARTICIPANTE part WHERE modal.ID_MODALIDADE = aloc.ID_MODALIDADE AND aloc.ID_PARTICIPANTE = part.ID_PARTICIPANTE AND part.NOME like UPPER(?)"));
 
 	}
 	public static Connection getCon() {
