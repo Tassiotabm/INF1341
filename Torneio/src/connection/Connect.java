@@ -11,7 +11,7 @@ public final class Connect {
 	public Connect(){
 		  
 		String url = "jdbc:oracle:thin:@localhost:1521:xe"; 
-		//String url = "jdbc:oracle:thin:@139.82.3.27:1521:orcl"; PUC
+		//String url = "jdbc:oracle:thin:@139.82.3.27:1521:orcl"; NAO APAGAR ESSA PORRA É DA PUC
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -22,7 +22,8 @@ public final class Connect {
 
 		try {
 			con = DriverManager.getConnection(url,"felipe", "felipe");
-			//con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881"); PUC
+			//con = DriverManager.getConnection(url,"felipe", "felipe");
+			//con = DriverManager.getConnection(url,"BD32017_1321881", "BD32017_1321881");  NAO APAGAR ESSA PORRA É DA PUC
 			System.out.println("Connection Sucess.");
 		} catch(SQLException ex) {
 			System.out.println("Não consegui conectar com servidor, tentar na PUC!");
@@ -48,9 +49,7 @@ public final class Connect {
 		  vetordeStatement.add(connection.prepareStatement("SELECT NOME,ID_PARTICIPANTE FROM PARTICIPANTE WHERE ID_PARTICIPANTE IN( SELECT ID_PARTICIPANTE FROM ALOCADO WHERE ID_MODALIDADE = ? and ID_SERIE = ?)"));
 		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET DATAINI = ? WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
 		  vetordeStatement.add(connection.prepareStatement("UPDATE SERIE SET STATUS = 'executada' WHERE ID_SERIE = ? and ID_MODALIDADE = ?"));
-		  vetordeStatement.add(connection.prepareStatement("SELECT aloc.NUMERO_PART,aloc.RESULTADO,modal.NOME FROM ALOCADO aloc JOIN MODALIDADE modal ON modal.ID_MODALIDADE = aloc.ID_MODALIDADE WHERE aloc.ID_PARTICIPANTE = ?"));
 		  vetordeStatement.add(connection.prepareStatement("SELECT part.id_participante,part.nome, aloc.NUMERO_PART, aloc.RESULTADO, modal.NOME FROM ALOCADO aloc, MODALIDADE modal, PARTICIPANTE part WHERE modal.ID_MODALIDADE = aloc.ID_MODALIDADE AND aloc.ID_PARTICIPANTE = part.ID_PARTICIPANTE AND part.NOME like UPPER(?)"));
-
 	}
 	public static Connection getCon() {
 		return con;
