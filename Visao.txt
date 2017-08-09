@@ -1,0 +1,8 @@
+CREATE OR REPLACE FORCE VIEW "BD32017_1321931"."PARTICIPANTE_MODALIDADE" ("MNAME", "PNAME", "RESULTADO") AS 
+  SELECT modal.nome as mname, part.NOME as pname,aloc.resultado
+FROM alocado aloc, MODALIDADE modal, PARTICIPANTE part
+WHERE modal.ID_MODALIDADE = aloc.ID_MODALIDADE
+AND aloc.ID_PARTICIPANTE = part.ID_PARTICIPANTE
+AND aloc.id_serie = 1
+order by 1;
+ 

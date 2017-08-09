@@ -1,0 +1,30 @@
+INF1341				
+
+TRABALHO 1
+
+GRUPO:  TASSIO MIRANDA
+		FELIPE VIEIRA
+		ALESSANDRO FALETTI
+		
+ -Onde e por que utilizou/não utilizou stored procedures?
+
+Utilizamos procedimentos para alocar os participantes nas series e selecionar os 64 melhores para as eliminatórias.
+Outro procedimeto que aloca os participantes que passaram para a proxima etapa (ordenado por melhores notas,ascendente o caso de corridas e decrescente no caso de saltos e arremeços)
+
+ -Onde e por que utilizou/não utilizou triggers?
+
+Usamos uma trigger que insere AUTOMATICAMENTE na tabela SERIE quando uma nova modalidade é cadastrada, passando os ids referentes a eliminatórias, semifinais e finais.
+ A trigger de checar data tem o problema de tabela mutante. (Solução correta é usar chave unica)
+ 
+ -Onde e por que utilizou/não utilizou visões?
+Usamos uma visão para mostrar todos os participantes de cada modalidade (consulta executada com frequencia)
+
+Onde e por que utilizou/não utilizou statements?
+
+Não utilizamos statements, pois em todas as interações usamos 
+os prepared statements, para garantir que o usuário não possa
+modificar as nossas consultas.
+
+ -Onde e por que utilizou/não utilizou prepared statements?
+
+  Usamos prepared statements pois percebemos que muitos comandos de cadastros e consultas eram usados com frequencia nos terminais de acesso (por exemplo: todas as abas da administração), aumentando o desempenho no banco.

@@ -1,0 +1,79 @@
+create or replace PROCEDURE                   "ALOCA_SERIE_CORRIDA" (serieID in NUMBER,modID in NUMBER)
+AS
+	CURSOR aloc_cursor (id_mod in NUMBER) IS
+		SELECT ID_PARTICIPANTE, ID_MODALIDADE FROM ALOCADO
+		WHERE ID_MODALIDADE = id_mod
+		ORDER BY RESULTADO ASC;
+	reg_alocado ALOCADO%ROWTYPE;
+
+    tam NUMBER;
+BEGIN
+        if serieID = 2 then
+            tam := 32;
+        else
+            if serieID = 3 then
+                tam := 8;
+            end if;
+        end if;
+		OPEN aloc_cursor (modID);
+		FOR i IN 1..tam LOOP
+			FETCH aloc_cursor INTO reg_alocado.id_participante,reg_alocado.id_modalidade;
+			EXIT WHEN aloc_cursor%NOTFOUND;
+			INSERT INTO ALOCADO VALUES (reg_alocado.ID_PARTICIPANTE, serieID, reg_alocado.ID_MODALIDADE, (mod(i,8) + 1), null);
+		END LOOP;
+		CLOSE aloc_cursor;
+END;
+
+
+create or replace PROCEDURE                   "ALOCA_SERIE_LANCAMENTO" (serieID in NUMBER,modID in NUMBER)
+AS
+	CURSOR aloc_cursor (id_mod in NUMBER) IS
+		SELECT ID_PARTICIPANTE, ID_MODALIDADE FROM ALOCADO
+		WHERE ID_MODALIDADE = id_mod
+		ORDER BY RESULTADO DESC;
+	reg_alocado ALOCADO%ROWTYPE;
+
+    tam NUMBER;
+BEGIN
+        if serieID = 2 then
+            tam := 32;
+        else
+            if serieID = 3 then
+                tam := 8;
+            end if;
+        end if;
+		OPEN aloc_cursor (modID);
+		FOR i IN 1..tam LOOP
+			FETCH aloc_cursor INTO reg_alocado.id_participante,reg_alocado.id_modalidade;
+			EXIT WHEN aloc_cursor%NOTFOUND;
+			INSERT INTO ALOCADO VALUES (reg_alocado.ID_PARTICIPANTE, serieID, reg_alocado.ID_MODALIDADE, (mod(i,8) + 1), null);
+		END LOOP;
+		CLOSE aloc_cursor;
+END;
+
+create or replace PROCEDURE                   "SELECIONA_ELIMINATORIAS" 
+AS
+	CURSOR mod_cursor IS
+		SELECT ID_MODALIDADE FROM MODALIDADE;
+	reg_modalidade MODALIDADE%ROWTYPE;
+
+	CURSOR insc_cursor (id_mod in NUMBER) IS
+		SELECT ID_PARTICIPANTE,ID_MODALIDADE FROM INSCRITO
+		WHERE ID_MODALIDADE = id_mod
+        ORDER BY MARCA ASC;
+	reg_inscrito INSCRITO%ROWTYPE;	
+BEGIN
+	OPEN mod_cursor;
+	LOOP
+		FETCH mod_cursor into reg_modalidade.id_modalidade;
+		EXIT WHEN mod_cursor%NOTFOUND;
+		OPEN insc_cursor (reg_modalidade.id_modalidade);
+		FOR i IN 1..64 LOOP
+			FETCH insc_cursor INTO reg_inscrito.id_participante,reg_inscrito.id_modalidade;
+			EXIT WHEN insc_cursor%NOTFOUND;
+			INSERT INTO ALOCADO VALUES (reg_inscrito.ID_PARTICIPANTE, 1,reg_modalidade.id_modalidade,(mod(i,8)+1) ,null);
+		END LOOP;
+		CLOSE insc_cursor;
+	END LOOP;
+	CLOSE mod_cursor;
+END;

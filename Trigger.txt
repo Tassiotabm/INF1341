@@ -1,0 +1,60 @@
+create or replace TRIGGER checa_data_serie
+BEFORE INSERT OR UPDATE OF dataini ON SERIE
+FOR EACH ROW
+DECLARE
+  qtd NUMBER;
+BEGIN
+      SELECT count(*) into qtd
+       FROM SERIE
+       WHERE :new.id_serie = id_serie and 
+             :new.id_modalidade = id_modalidade and 
+             :new.dataini = dataini;
+  if(qtd > 0) then
+   RAISE_APPLICATION_ERROR(-20002,'Não é possível inserir datas iguais para a mesma serie da modalidade');
+  end if;
+END;
+
+create or replace TRIGGER gera_modalidade_id
+BEFORE INSERT ON MODALIDADE
+FOR EACH ROW
+BEGIN
+  SELECT my_seq.NEXTVAL
+  INTO   :new.ID_MODALIDADE
+  FROM   dual;
+END;
+
+create or replace TRIGGER gera_torneio_id
+BEFORE INSERT ON TORNEIO
+FOR EACH ROW
+BEGIN
+  SELECT my_seq1.NEXTVAL
+  INTO   :new.ID_TORNEIO
+  FROM   dual;
+END;
+
+create or replace TRIGGER insere_serie_modalidade
+BEFORE INSERT ON MODALIDADE
+FOR EACH ROW
+BEGIN
+    INSERT INTO SERIE
+        (id_serie, id_modalidade, status,dataini) 
+     VALUES (
+        1,
+        :new.id_modalidade, 
+        'prevista',
+        null);
+            INSERT INTO SERIE
+        (id_serie, id_modalidade, status,dataini) 
+     VALUES (
+        2,
+        :new.id_modalidade, 
+        'prevista',
+        null);
+            INSERT INTO SERIE
+        (id_serie, id_modalidade, status,dataini) 
+     VALUES (
+        3,
+        :new.id_modalidade, 
+        'prevista',
+        null);
+END;
